@@ -247,6 +247,9 @@
             .cinematic-container { height: 420px; }
             .main-title { font-size: 3.2rem; }
             .poetic-text { font-size: 1.25rem; line-height: 1.9; }
+            .slide-caption-box { bottom: 75px; padding: 10px 14px; }
+            .slide-caption-title { font-size: 1.55rem; }
+            .slide-caption-desc { font-size: 0.92rem; }
         }
 
         .slide-item {
@@ -290,15 +293,22 @@
 
         .slide-caption-box {
             position: absolute;
-            bottom: 40px;
-            left: 0;
-            right: 0;
+            bottom: 80px;
+            left: 20px;
+            right: 20px;
             text-align: center;
-            padding: 0 25px;
+            padding: 12px 20px;
             z-index: 4;
-            transform: translateY(25px);
+            transform: translateY(15px);
             opacity: 0;
-            transition: all 1s ease 0.6s;
+            transition: all 0.8s ease 0.4s;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            max-width: 90%;
+            margin: 0 auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         .slide-item.active .slide-caption-box {
@@ -308,15 +318,15 @@
 
         .slide-caption-title {
             font-family: var(--font-display);
-            font-size: 2.2rem;
+            font-size: 2.1rem;
             color: var(--gold-light);
-            text-shadow: 0 3px 10px rgba(0,0,0,0.9);
-            margin-bottom: 6px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            margin-bottom: 4px;
         }
 
         .slide-caption-desc {
-            font-size: 1.1rem;
-            color: #E2E8F0;
+            font-size: 1.05rem;
+            color: #F1F5F9;
             text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
 
