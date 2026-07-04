@@ -1077,6 +1077,15 @@
                     <div id="playlistItemsList" style="display: flex; flex-direction: column; gap: 8px; text-align: right;"></div>
                 </div>
 
+                <!-- Save Playlist to GitHub (Admin Only) -->
+                <div style="text-align:center; margin: 10px auto 5px;">
+                    <button type="button" onclick="showSaveToGitHubModal()" style="background: linear-gradient(135deg, #1a5c38, #27ae60); color:#FFF; font-weight:700; border:none; padding:10px 22px; border-radius:30px; cursor:pointer; font-size:0.92rem; display:inline-flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> حفظ للجميع أونلاين 🌍
+                    </button>
+                    <p style="color:rgba(255,255,255,0.45); font-size:0.75rem; margin-top:6px;">اضغط بعد إضافة الأغاني لتثبيتها دائماً لجميع أفراد العائلة</p>
+                </div>
+
+
                 <div class="custom-audio-file-row">
                     <span>أو اختر ملفات أغاني MP3 من جهازك:</span>
                     <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--rose-gold), var(--gold-dark)); color:#FFF;">
@@ -1375,14 +1384,9 @@
                 videoId: '',
                 host: 'https://www.youtube-nocookie.com',
                 playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'loop': 0,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'iv_load_policy': 3,
-                    'disablekb': 1,
-                    'origin': window.location.origin
+                    'autoplay': 1, 'controls': 0, 'loop': 0,
+                    'modestbranding': 1, 'rel': 0, 'iv_load_policy': 3,
+                    'disablekb': 1, 'origin': window.location.origin
                 },
                 events: {
                     'onStateChange': function (e) {
@@ -1393,7 +1397,6 @@
                             document.getElementById('audioStatusText').innerText = title;
                             document.querySelector('#mainAudioBtn i').className = 'fa-brands fa-youtube';
                         } else if (e.data === YT.PlayerState.ENDED) {
-                            // AUTOMATICALLY PLAY NEXT TRACK WHEN CURRENT FINISHES!
                             playNextTrack();
                         }
                     }
@@ -1401,82 +1404,132 @@
             });
         }
 
-        /* Ultra Robust Audio Playlist Sync Engine (LocalStorage + Cloud DB) */
-        const CLOUD_PLAYLIST_URL = "https://nafas-birthday-wishes-default-rtdb.firebaseio.com/playlist";
+        /* =========================================================
+           PLAYLIST ENGINE v3.0 — playlist.json على GitHub Pages
+           ========================================================= */
+        const PLAYLIST_JSON_URL = './playlist.json';
+        const REPO_OWNER = 'karim-fayed';
+        const REPO_NAME  = 'NafasOneYears';
+        const REPO_BRANCH = 'main';
+        const PLAYLIST_FILE_PATH = 'playlist.json';
 
-        // Load local playlist first for instant zero latency
+        // تحميل فوري من localStorage (بدون تأخير)
         try {
-            const savedLocal = localStorage.getItem('nafas_playlist_queue');
+            const savedLocal = localStorage.getItem('nafas_playlist_v3');
             if (savedLocal) {
                 playlistQueue = JSON.parse(savedLocal);
             }
         } catch (e) { }
 
-        // Fetch saved playlist from cloud for all visitors
-        async function fetchCloudPlaylist() {
+        // Always fetch fresh playlist.json from GitHub Pages (the authoritative source for all visitors)
+        async function fetchPlaylistJson() {
             try {
-                const res = await fetch(`${CLOUD_PLAYLIST_URL}.json`);
+                const res = await fetch(PLAYLIST_JSON_URL + '?t=' + Date.now());
                 if (!res.ok) return;
                 const data = await res.json();
-                if (!data) return;
-
-                const tracks = Object.keys(data).map(key => ({ cloudId: key, ...data[key] }));
-                if (tracks.length > 0) {
-                    playlistQueue = tracks;
-                    saveLocalPlaylist();
+                if (data && Array.isArray(data.tracks) && data.tracks.length > 0) {
+                    playlistQueue = data.tracks;
+                    localStorage.setItem('nafas_playlist_v3', JSON.stringify(playlistQueue));
                     updatePlaylistUI();
-                    if (!audioIsPlaying && playlistQueue.length > 0) {
-                        currentPlaylistIndex = 0;
-                    }
                 }
             } catch (err) {
-                console.log('Using local audio playlist fallback');
+                console.log('Using cached local playlist');
             }
         }
-
-        fetchCloudPlaylist();
+        fetchPlaylistJson();
 
         function saveLocalPlaylist() {
             try {
-                localStorage.setItem('nafas_playlist_queue', JSON.stringify(playlistQueue));
+                localStorage.setItem('nafas_playlist_v3', JSON.stringify(playlistQueue));
             } catch (e) { }
         }
 
-        async function syncTrackToCloud(track) {
-            saveLocalPlaylist();
+        // Save playlist permanently to GitHub repository file (visible to ALL visitors)
+        async function savePlaylistToGitHub(token) {
+            const content = JSON.stringify({ tracks: playlistQueue }, null, 2);
+            const encoded = btoa(unescape(encodeURIComponent(content)));
+            let sha = '';
             try {
-                const res = await fetch(`${CLOUD_PLAYLIST_URL}.json`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(track)
+                const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PLAYLIST_FILE_PATH}`, {
+                    headers: { 'Authorization': `token ${token}` }
                 });
-                const result = await res.json();
-                if (result && result.name) {
-                    track.cloudId = result.name;
-                    saveLocalPlaylist();
+                if (getRes.ok) {
+                    const fileData = await getRes.json();
+                    sha = fileData.sha || '';
                 }
             } catch (e) { }
+
+            const body = { message: 'تحديث قائمة أغاني نَفَس 🎵', content: encoded, branch: REPO_BRANCH };
+            if (sha) body.sha = sha;
+
+            const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PLAYLIST_FILE_PATH}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return putRes.ok;
         }
 
-        async function syncDeleteTrackFromCloud(cloudId) {
-            saveLocalPlaylist();
-            if (!cloudId) return;
+        function showSaveToGitHubModal() {
+            const existing = document.getElementById('ghSaveModal');
+            if (existing) { existing.style.display = 'flex'; return; }
+
+            const modal = document.createElement('div');
+            modal.id = 'ghSaveModal';
+            modal.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;`;
+            modal.innerHTML = `
+                <div style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:1px solid #D4AF37;border-radius:20px;padding:30px;max-width:520px;width:100%;text-align:center;">
+                    <div style="font-size:1.8rem;margin-bottom:8px;">🔐 حفظ القائمة للجميع أونلاين</div>
+                    <p style="color:rgba(255,255,255,0.85);font-size:0.88rem;margin-bottom:18px;">لحفظ الأغاني بشكل دائم للجميع، تحتاج <strong>GitHub Token</strong> مرة واحدة فقط:</p>
+                    <div style="background:rgba(0,0,0,0.4);border-radius:12px;padding:15px;margin-bottom:18px;text-align:right;">
+                        <p style="color:#D4AF37;font-size:0.85rem;margin-bottom:8px;">📝 خطوات الحصول على Token (مرة واحدة فقط):</p>
+                        <ol style="color:rgba(255,255,255,0.8);font-size:0.8rem;padding-right:18px;line-height:1.9;">
+                            <li>افتح: <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#FFD700;">github.com/settings/tokens/new</a></li>
+                            <li>في <strong>Note</strong> اكتب: NafasMusic</li>
+                            <li>اختر <strong>repo</strong> من الصلاحيات</li>
+                            <li>اضغط <strong>Generate Token</strong> وانسخه هنا</li>
+                        </ol>
+                    </div>
+                    <input id="ghTokenInput" type="password" placeholder="الصق GitHub Token هنا..." style="width:100%;padding:12px 15px;border-radius:30px;border:1px solid #D4AF37;background:rgba(0,0,0,0.5);color:#FFF;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;">
+                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="doSaveToGitHub()" style="background:linear-gradient(135deg,#D4AF37,#996515);color:#000;font-weight:700;padding:12px 24px;border-radius:30px;border:none;cursor:pointer;font-size:0.95rem;">💾 حفظ دائم للجميع</button>
+                        <button onclick="document.getElementById('ghSaveModal').style.display='none'" style="background:rgba(255,255,255,0.1);color:#FFF;padding:12px 20px;border-radius:30px;border:1px solid rgba(255,255,255,0.3);cursor:pointer;">إلغاء</button>
+                    </div>
+                    <div id="ghSaveStatus" style="margin-top:12px;font-size:0.85rem;"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        async function doSaveToGitHub() {
+            const tokenInput = document.getElementById('ghTokenInput');
+            const statusEl = document.getElementById('ghSaveStatus');
+            const token = tokenInput ? tokenInput.value.trim() : '';
+            if (!token) { statusEl.innerHTML = '<span style="color:#FF5555;">⚠️ الرجاء إدخال GitHub Token</span>'; return; }
+            statusEl.innerHTML = '<span style="color:#FFD700;">⏳ جاري الحفظ في GitHub...</span>';
             try {
-                await fetch(`${CLOUD_PLAYLIST_URL}/${cloudId}.json`, {
-                    method: 'DELETE'
-                });
-            } catch (e) { }
+                const ok = await savePlaylistToGitHub(token);
+                if (ok) {
+                    statusEl.innerHTML = '<span style="color:#55FF88;">✅ تم الحفظ! ستظهر الأغاني للجميع خلال دقيقة.</span>';
+                    showToast('تمت إضافة الأغاني لجميع العائلة! 🎉');
+                    setTimeout(() => { document.getElementById('ghSaveModal').style.display = 'none'; }, 3000);
+                } else {
+                    statusEl.innerHTML = '<span style="color:#FF5555;">❌ فشل الحفظ - تأكد أن الـ Token صحيح وله صلاحية repo</span>';
+                }
+            } catch (e) {
+                statusEl.innerHTML = `<span style="color:#FF5555;">❌ خطأ: ${e.message}</span>`;
+            }
         }
 
         function addYouTubeToPlaylist() {
             const input = document.getElementById('ytUrlInput');
             if (!input || !input.value.trim()) {
-                showToast('الرجاء كتابة أو لصق رابط الأغنية أولاً ⚠️');
+                showToast('الرجاء لصق رابط الأغنية أولاً ⚠️');
                 return;
             }
             const videoId = extractYouTubeId(input.value.trim());
             if (!videoId) {
-                showToast('رابط يوتيوب غير صحيح، يرجى التأكد من الرابط ❌');
+                showToast('رابط يوتيوب غير صحيح ❌');
                 return;
             }
 
@@ -1484,10 +1537,9 @@
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
             saveLocalPlaylist();
-            syncTrackToCloud(track);
             input.value = '';
             updatePlaylistUI();
-            showToast('تم حفظ وإضافة الأغنية لقائمة العائلة! ➕🎶');
+            showToast('تمت الإضافة! 🎶 اضغط "حفظ للجميع" لتثبيتها دائماً');
 
             if (playlistQueue.length === 1 && !audioIsPlaying) {
                 playTrackAtIndex(0);
@@ -1496,9 +1548,19 @@
 
         function playYouTubeFromInput() {
             const input = document.getElementById('ytUrlInput');
+            if (!input || !input.value.trim()) {
+                showToast('الرجاء لصق رابط الأغنية أولاً ⚠️');
+                return;
+            }
+            const videoId = extractYouTubeId(input.value.trim());
+            if (!videoId) {
+                showToast('رابط يوتيوب غير صحيح ❌');
+                return;
+            }
+            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
-            syncTrackToCloud(track);
+            saveLocalPlaylist();
             currentPlaylistIndex = playlistQueue.length - 1;
             input.value = '';
             updatePlaylistUI();
@@ -1530,26 +1592,19 @@
         }
 
         function playNextTrack() {
-            if (playlistQueue.length > 0) {
-                playTrackAtIndex(currentPlaylistIndex + 1);
-            }
+            if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex + 1);
         }
 
         function playPrevTrack() {
-            if (playlistQueue.length > 0) {
-                playTrackAtIndex(currentPlaylistIndex - 1);
-            }
+            if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex - 1);
         }
 
         function removeTrackFromPlaylist(index) {
-            const track = playlistQueue[index];
-            if (track && track.cloudId) {
-                syncDeleteTrackFromCloud(track.cloudId);
-            }
             playlistQueue.splice(index, 1);
             if (currentPlaylistIndex >= playlistQueue.length) {
                 currentPlaylistIndex = Math.max(0, playlistQueue.length - 1);
             }
+            saveLocalPlaylist();
             updatePlaylistUI();
         }
 
@@ -1558,24 +1613,28 @@
             if (!listContainer) return;
 
             if (playlistQueue.length === 0) {
-                listContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size:0.85rem; text-align:center; padding:5px;">القائمة فارغة، ضَع روابط يوتيوب واضغط "إضافة للقائمة" لتعمل متتالية أوتوماتيكياً.</div>`;
+                listContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size:0.85rem; text-align:center; padding:5px;">القائمة فارغة — أضف روابط يوتيوب واضغط "حفظ للجميع" لتعمل لدى كل العائلة.</div>`;
                 return;
             }
 
             listContainer.innerHTML = playlistQueue.map((track, i) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background: ${i === currentPlaylistIndex ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.06)'}; padding: 6px 12px; border-radius: 8px; border: 1px solid ${i === currentPlaylistIndex ? 'var(--gold-primary)' : 'transparent'}; font-size:0.9rem;">
-                    <span style="color:${i === currentPlaylistIndex ? 'var(--gold-light)' : '#FFF'}; font-weight:${i === currentPlaylistIndex ? 'bold' : 'normal'}; cursor:pointer;" onclick="playTrackAtIndex(${i})">
+                <div style="display:flex; justify-content:space-between; align-items:center; background: ${i === currentPlaylistIndex ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.06)'}; padding: 6px 12px; border-radius: 8px; border: 1px solid ${i === currentPlaylistIndex ? 'var(--gold-primary)' : 'transparent'}; font-size:0.9rem; margin-bottom:4px;">
+                    <span style="color:${i === currentPlaylistIndex ? 'var(--gold-light)' : '#FFF'}; cursor:pointer;" onclick="playTrackAtIndex(${i})">
                         ${i === currentPlaylistIndex ? '▶️ ' : ''}${i + 1}. ${escapeHtml(track.title)}
                     </span>
-                    <button onclick="removeTrackFromPlaylist(${i})" style="background:none; border:none; color:#FF5555; cursor:pointer;" title="حذف الأغنية"><i class="fa-solid fa-trash-can"></i></button>
+                    <button onclick="removeTrackFromPlaylist(${i})" style="background:none; border:none; color:#FF5555; cursor:pointer;"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             `).join('');
         }
 
         function extractYouTubeId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            if (!url) return '';
+            url = url.trim();
+            const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : url;
+            if (match && match[1] && match[1].length === 11) return match[1];
+            if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+            return '';
         }
 
         /* Local File Picker Loaders for instant live preview */
