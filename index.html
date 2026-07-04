@@ -1401,8 +1401,16 @@
             });
         }
 
-        /* Cloud Audio Playlist Sync Engine */
+        /* Ultra Robust Audio Playlist Sync Engine (LocalStorage + Cloud DB) */
         const CLOUD_PLAYLIST_URL = "https://nafas-birthday-wishes-default-rtdb.firebaseio.com/playlist";
+
+        // Load local playlist first for instant zero latency
+        try {
+            const savedLocal = localStorage.getItem('nafas_playlist_queue');
+            if (savedLocal) {
+                playlistQueue = JSON.parse(savedLocal);
+            }
+        } catch (e) { }
 
         // Fetch saved playlist from cloud for all visitors
         async function fetchCloudPlaylist() {
@@ -1415,19 +1423,27 @@
                 const tracks = Object.keys(data).map(key => ({ cloudId: key, ...data[key] }));
                 if (tracks.length > 0) {
                     playlistQueue = tracks;
+                    saveLocalPlaylist();
                     updatePlaylistUI();
                     if (!audioIsPlaying && playlistQueue.length > 0) {
                         currentPlaylistIndex = 0;
                     }
                 }
             } catch (err) {
-                console.log('Using default audio player fallback');
+                console.log('Using local audio playlist fallback');
             }
         }
 
         fetchCloudPlaylist();
 
+        function saveLocalPlaylist() {
+            try {
+                localStorage.setItem('nafas_playlist_queue', JSON.stringify(playlistQueue));
+            } catch (e) { }
+        }
+
         async function syncTrackToCloud(track) {
+            saveLocalPlaylist();
             try {
                 const res = await fetch(`${CLOUD_PLAYLIST_URL}.json`, {
                     method: 'POST',
@@ -1437,11 +1453,13 @@
                 const result = await res.json();
                 if (result && result.name) {
                     track.cloudId = result.name;
+                    saveLocalPlaylist();
                 }
             } catch (e) { }
         }
 
         async function syncDeleteTrackFromCloud(cloudId) {
+            saveLocalPlaylist();
             if (!cloudId) return;
             try {
                 await fetch(`${CLOUD_PLAYLIST_URL}/${cloudId}.json`, {
@@ -1452,20 +1470,24 @@
 
         function addYouTubeToPlaylist() {
             const input = document.getElementById('ytUrlInput');
-            if (!input || !input.value.trim()) return;
+            if (!input || !input.value.trim()) {
+                showToast('الرجاء كتابة أو لصق رابط الأغنية أولاً ⚠️');
+                return;
+            }
             const videoId = extractYouTubeId(input.value.trim());
             if (!videoId) {
-                showToast('رابط يوتيوب غير صحيح ❌');
+                showToast('رابط يوتيوب غير صحيح، يرجى التأكد من الرابط ❌');
                 return;
             }
 
             const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
+            saveLocalPlaylist();
             syncTrackToCloud(track);
             input.value = '';
             updatePlaylistUI();
-            showToast('تمت إضافة الأغنية سحابياً لجميع العائلة! ➕🎶');
+            showToast('تم حفظ وإضافة الأغنية لقائمة العائلة! ➕🎶');
 
             if (playlistQueue.length === 1 && !audioIsPlaying) {
                 playTrackAtIndex(0);
@@ -1474,14 +1496,6 @@
 
         function playYouTubeFromInput() {
             const input = document.getElementById('ytUrlInput');
-            if (!input || !input.value.trim()) return;
-            const videoId = extractYouTubeId(input.value.trim());
-            if (!videoId) {
-                showToast('رابط يوتيوب غير صحيح ❌');
-                return;
-            }
-
-            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
             syncTrackToCloud(track);
