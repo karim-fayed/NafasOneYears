@@ -1226,7 +1226,7 @@
         let isPlaying = true;
         let slideInterval = null;
         let progressInterval = null;
-        const duration = 22000; // 22 seconds per slide (+10 extra seconds added!)
+        const duration = 22000;
         let startTime = Date.now();
         let confettiTimeout = null;
         let subSlideTimeout = null;
@@ -1298,16 +1298,22 @@
                     slide.classList.add('active');
                     const photo1 = slide.querySelector('.main-slide-img');
                     const photo2 = slide.querySelector('.main-slide-img-2');
-                    if (photo1) photo1.style.opacity = '1';
-                    if (photo2) {
+                    if (photo1) {
+                        photo1.style.opacity = '1';
+                        photo1.style.display = 'block';
+                    }
+                    if (photo2 && photo2.style.display !== 'none') {
                         photo2.style.opacity = '0';
-                        // Switch to 2nd photo at 11 seconds (halfway through 22s)
+                        // Switch to 2nd photo/video at 11 seconds (halfway through 22s) only if photo2 exists & loaded
                         subSlideTimeout = setTimeout(() => {
-                            if (isPlaying && slide.classList.contains('active')) {
+                            if (isPlaying && slide.classList.contains('active') && photo2.style.display !== 'none') {
                                 photo1.style.transition = 'opacity 1.5s ease';
                                 photo2.style.transition = 'opacity 1.5s ease';
                                 photo1.style.opacity = '0';
                                 photo2.style.opacity = '1';
+                                if (photo2.tagName === 'VIDEO') {
+                                    try { photo2.currentTime = 0; photo2.play(); } catch (e) { }
+                                }
                             }
                         }, 11000);
                     }
@@ -1334,7 +1340,7 @@
 
         function resetProgress() {
             const progressBar = document.getElementById('slideProgress');
-            progressBar.style.width = '0%';
+            if (progressBar) progressBar.style.width = '0%';
             startTime = Date.now();
         }
 
@@ -1343,15 +1349,17 @@
             if (progressInterval) clearInterval(progressInterval);
 
             startTime = Date.now();
+
             slideInterval = setInterval(() => {
-                nextSlide();
+                if (isPlaying) nextSlide();
             }, duration);
 
             progressInterval = setInterval(() => {
                 if (isPlaying) {
                     let elapsed = Date.now() - startTime;
                     let pct = Math.min((elapsed / duration) * 100, 100);
-                    document.getElementById('slideProgress').style.width = pct + '%';
+                    const progressBar = document.getElementById('slideProgress');
+                    if (progressBar) progressBar.style.width = pct + '%';
                 }
             }, 50);
         }
