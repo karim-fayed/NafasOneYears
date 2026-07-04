@@ -1401,6 +1401,55 @@
             });
         }
 
+        /* Cloud Audio Playlist Sync Engine */
+        const CLOUD_PLAYLIST_URL = "https://nafas-birthday-wishes-default-rtdb.firebaseio.com/playlist";
+
+        // Fetch saved playlist from cloud for all visitors
+        async function fetchCloudPlaylist() {
+            try {
+                const res = await fetch(`${CLOUD_PLAYLIST_URL}.json`);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data) return;
+
+                const tracks = Object.keys(data).map(key => ({ cloudId: key, ...data[key] }));
+                if (tracks.length > 0) {
+                    playlistQueue = tracks;
+                    updatePlaylistUI();
+                    if (!audioIsPlaying && playlistQueue.length > 0) {
+                        currentPlaylistIndex = 0;
+                    }
+                }
+            } catch (err) {
+                console.log('Using default audio player fallback');
+            }
+        }
+
+        fetchCloudPlaylist();
+
+        async function syncTrackToCloud(track) {
+            try {
+                const res = await fetch(`${CLOUD_PLAYLIST_URL}.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(track)
+                });
+                const result = await res.json();
+                if (result && result.name) {
+                    track.cloudId = result.name;
+                }
+            } catch (e) { }
+        }
+
+        async function syncDeleteTrackFromCloud(cloudId) {
+            if (!cloudId) return;
+            try {
+                await fetch(`${CLOUD_PLAYLIST_URL}/${cloudId}.json`, {
+                    method: 'DELETE'
+                });
+            } catch (e) { }
+        }
+
         function addYouTubeToPlaylist() {
             const input = document.getElementById('ytUrlInput');
             if (!input || !input.value.trim()) return;
@@ -1411,10 +1460,12 @@
             }
 
             const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
-            playlistQueue.push({ type: 'yt', id: videoId, title: trackTitle });
+            const track = { type: 'yt', id: videoId, title: trackTitle };
+            playlistQueue.push(track);
+            syncTrackToCloud(track);
             input.value = '';
             updatePlaylistUI();
-            showToast('تمت إضافة الأغنية للقائمة المتتابعة! ➕🎶');
+            showToast('تمت إضافة الأغنية سحابياً لجميع العائلة! ➕🎶');
 
             if (playlistQueue.length === 1 && !audioIsPlaying) {
                 playTrackAtIndex(0);
@@ -1431,7 +1482,9 @@
             }
 
             const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
-            playlistQueue.push({ type: 'yt', id: videoId, title: trackTitle });
+            const track = { type: 'yt', id: videoId, title: trackTitle };
+            playlistQueue.push(track);
+            syncTrackToCloud(track);
             currentPlaylistIndex = playlistQueue.length - 1;
             input.value = '';
             updatePlaylistUI();
@@ -1475,6 +1528,10 @@
         }
 
         function removeTrackFromPlaylist(index) {
+            const track = playlistQueue[index];
+            if (track && track.cloudId) {
+                syncDeleteTrackFromCloud(track.cloudId);
+            }
             playlistQueue.splice(index, 1);
             if (currentPlaylistIndex >= playlistQueue.length) {
                 currentPlaylistIndex = Math.max(0, playlistQueue.length - 1);
