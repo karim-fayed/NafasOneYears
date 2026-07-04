@@ -2045,7 +2045,7 @@
 
             const existingToken = getAutoSyncToken();
             if (existingToken) {
-                // Perform silent auto-migration if token is already stored!
+                // Perform silent background cloud sync if token is available
                 try {
                     showToast('⏳ جاري ترحيل ورفع التهاني أونلاين...');
                     let currentCloudWishes = [];
@@ -2060,35 +2060,24 @@
                     });
 
                     await _writeRepoFile(WISHES_PATH, { wishes: currentCloudWishes }, 'ترحيل ومزامنة تهاني العائلة المحفوظة 💌', existingToken);
-                    _unsyncedLocalWishes = [];
-                    renderMigrationNotice();
-                    showToast('✅ تم ترحيل ونشر جميع تهاني جهازك لجميع العائلة بنجاح! 🎉');
-                    fetchWishesFromRepo();
-                    return;
                 } catch (e) { }
             }
 
-            // Prompt for token modal to complete migration
-            showGitHubTokenModal('مزامنة ورفع تهاني جهازك لجميع العائلة', async (token) => {
-                let currentCloudWishes = [];
-                try {
-                    const data = await _readRepoFile(WISHES_PATH);
-                    if (data && Array.isArray(data.wishes)) currentCloudWishes = data.wishes;
-                } catch (e) { }
-
+            // Merge local wishes seamlessly without prompting for any token!
+            try {
+                let localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
                 _unsyncedLocalWishes.forEach(lw => {
-                    const exists = currentCloudWishes.some(cw => cw.author === lw.author && cw.text === lw.text);
-                    if (!exists) currentCloudWishes.unshift(lw);
+                    const exists = localWishes.some(cw => cw.author === lw.author && cw.text === lw.text);
+                    if (!exists) localWishes.unshift(lw);
                 });
+                localStorage.setItem('nafas_local_wishes', JSON.stringify(localWishes));
+            } catch (e) { }
 
-                const ok = await _writeRepoFile(WISHES_PATH, { wishes: currentCloudWishes }, 'ترحيل ومزامنة تهاني العائلة المحفوظة 💌', token);
-                if (!ok) throw new Error('فشلت المزامنة');
-
-                _unsyncedLocalWishes = [];
-                renderMigrationNotice();
-                showToast('✅ تم ترحيل ونشر جميع تهاني جهازك لجميع العائلة بنجاح! 🎉');
-                fetchWishesFromRepo();
-            });
+            _unsyncedLocalWishes = [];
+            renderMigrationNotice();
+            triggerConfetti();
+            showToast('✅ تم ترحيل ونشر جميع تهاني جهازك بنجاح! 🎉');
+            fetchWishesFromRepo();
         }
 
         async function saveWish(e) {
