@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عام من النور | عيد الميلاد الأول للغالية نَفَس 👑</title>
+    
+    <!-- SEO & Social Meta Tags -->
+    <meta name="description" content="احتفال بعيد الميلاد الأول للأميرة نَفَس - عام كامل من الحب والبهجة والنور">
+    <meta property="og:title" content="عام من النور | عيد الميلاد الأول لـ نَفَس 👑">
+    <meta property="og:description" content="شاركونا الفرحة بمناسبة اكتمال عامها الأول.. أجمل الصور والذكريات">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #D4AF37;
+            --gold-light: #F9F295;
+            --gold-dark: #AA771C;
+            --rose-gold: #E0A96D;
+            --rose-accent: #E88D95;
+            --deep-royal: #140C1D;
+            --card-bg: rgba(255, 255, 255, 0.07);
+            --card-border: rgba(212, 175, 55, 0.3);
+            --text-light: #F8F9FA;
+            --text-gold: #F3E5AB;
+            --font-display: 'Aref Ruqaa', serif;
+            --font-body: 'Tajawal', sans-serif;
+            --font-poetic: 'Amiri', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--deep-royal);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            background: radial-gradient(circle at 50% 20%, #2A1635 0%, #110818 60%, #09030D 100%);
+        }
+
+        /* Canvas Particle Background */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 15px 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Audio Floating Controls */
+        .audio-bar {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 12, 29, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .audio-bar:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .audio-btn {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #000;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .audio-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .audio-info {
+            font-size: 0.85rem;
+            color: var(--text-gold);
+            font-weight: 600;
+        }
+
+        /* Header Hero Section */
+        header.hero {
+            text-align: center;
+            padding: 60px 20px 30px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        .crown-badge {
+            display: inline-block;
+            font-size: 3.5rem;
+            color: var(--gold-primary);
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.7));
+            animation: floatCrown 4s ease-in-out infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes floatCrown {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+        }
+
+        .main-title {
+            font-family: var(--font-display);
+            font-size: 4.5rem;
+            background: linear-gradient(135deg, #FFF 0%, var(--gold-light) 50%, var(--gold-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+            margin: 5px 0;
+            line-height: 1.2;
+        }
+
+        .sub-title {
+            font-size: 1.3rem;
+            color: var(--rose-accent);
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .poetic-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px 25px;
+            margin: 20px auto;
+            max-width: 750px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poetic-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+        }
+
+        .poetic-text {
+            font-family: var(--font-poetic);
+            font-size: 1.45rem;
+            line-height: 2.2;
+            color: var(--text-gold);
+            text-align: center;
+        }
+
+        .highlight-gold {
+            color: #FFF;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+            background: linear-gradient(180deg, transparent 70%, rgba(212, 175, 55, 0.3) 70%);
+            padding: 0 4px;
+        }
+
+        /* Section Titles */
+        .section-header {
+            text-align: center;
+            margin: 50px 0 25px;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            color: var(--gold-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        /* Cinematic Video Slideshow Box */
+        .video-slideshow-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 24px;
+            padding: 8px;
+            border: 2px solid var(--gold-primary);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.25), 0 0 30px rgba(0, 0, 0, 0.8);
+            margin: 30px auto;
+            max-width: 850px;
+            overflow: hidden;
+        }
+
+        .cinematic-container {
+            position: relative;
+            width: 100%;
+            height: 520px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #050505;
+        }
+
+        @media (max-width: 768px) {
+            .cinematic-container { height: 420px; }
+            .main-title { font-size: 3.2rem; }
+            .poetic-text { font-size: 1.25rem; line-height: 1.9; }
+        }
+
+        .slide-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .slide-item.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Ken Burns Effect Animation */
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.18);
+            transition: transform 7s ease-out;
+        }
+
+        .slide-item.active img {
+            transform: scale(1);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.85) 100%);
+            z-index: 3;
+        }
+
+        .slide-caption-box {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 0 25px;
+            z-index: 4;
+            transform: translateY(25px);
+            opacity: 0;
+            transition: all 1s ease 0.6s;
+        }
+
+        .slide-item.active .slide-caption-box {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .slide-caption-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--gold-light);
+            text-shadow: 0 3px 10px rgba(0,0,0,0.9);
+            margin-bottom: 6px;
+        }
+
+        .slide-caption-desc {
+            font-size: 1.1rem;
+            color: #E2E8F0;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+
+        /* Video Controls Overlay */
+        .video-controls {
+            position: absolute;
+            bottom: 12px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #FFF;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            color: var(--gold-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar-wrap {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-primary), var(--rose-accent));
+            transition: width 0.1s linear;
+        }
+
+        /* Custom Local Image Uploader Helper */
+        .upload-helper-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 25px auto 40px;
+            max-width: 750px;
+        }
+
+        .upload-helper-box p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+        }
+
+        .btn-custom-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--rose-gold), var(--gold-dark));
+            color: #FFF;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-custom-upload:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Interactive Birthday Cake Section */
+        .cake-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 750px;
+            position: relative;
+        }
+
+        .cake-container {
+            position: relative;
+            width: 200px;
+            height: 180px;
+            margin: 30px auto 20px;
+            cursor: pointer;
+        }
+
+        /* Cake CSS Art */
+        .cake-plate {
+            position: absolute;
+            bottom: 0;
+            left: -20px;
+            width: 240px;
+            height: 14px;
+            background: #E2E8F0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .cake-layer-1 {
+            position: absolute;
+            bottom: 14px;
+            left: 10px;
+            width: 180px;
+            height: 60px;
+            background: linear-gradient(135deg, #F472B6, #DB2777);
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.15);
+        }
+
+        .cake-layer-2 {
+            position: absolute;
+            bottom: 74px;
+            left: 25px;
+            width: 150px;
+            height: 50px;
+            background: linear-gradient(135deg, #FBCFE8, #F472B6);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .cake-icing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #FFF;
+            border-radius: 10px 10px 5px 5px;
+        }
+
+        .candle {
+            position: absolute;
+            bottom: 124px;
+            left: 92px;
+            width: 16px;
+            height: 45px;
+            background: repeating-linear-gradient(45deg, #FFF, #FFF 6px, var(--gold-primary) 6px, var(--gold-primary) 12px);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .flame {
+            position: absolute;
+            bottom: 171px;
+            left: 93px;
+            width: 14px;
+            height: 24px;
+            background: radial-gradient(ellipse at bottom, #FFFBCC 0%, #FF9900 60%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 20px #FF9900, 0 0 35px #FF5500;
+            animation: flicker 0.8s infinite alternate ease-in-out;
+            transition: opacity 0.5s ease;
+        }
+
+        .flame.off {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.15) rotate(2deg); }
+        }
+
+        .blow-btn {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 14px 32px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .blow-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        /* Interactive Wishes Section */
+        .wishes-section {
+            margin: 60px auto;
+            max-width: 850px;
+        }
+
+        .wish-form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-gold);
+            font-weight: 600;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: #FFF;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-submit-wish {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-primary), var(--rose-accent));
+            color: #110818;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-submit-wish:hover {
+            opacity: 0.9;
+        }
+
+        .wishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .wish-item-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .wish-item-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold-primary);
+        }
+
+        .wish-author {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--gold-light);
+            margin-bottom: 5px;
+        }
+
+        .wish-rel {
+            font-size: 0.8rem;
+            color: var(--rose-accent);
+            margin-bottom: 10px;
+        }
+
+        .wish-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #E2E8F0;
+        }
+
+        /* Sharing Bar Section */
+        .share-section {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(232, 141, 149, 0.15));
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 35px 20px;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 750px;
+        }
+
+        .share-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            color: var(--gold-light);
+            margin-bottom: 15px;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            color: #FFF;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .share-btn.whatsapp { background: #25D366; }
+        .share-btn.facebook { background: #1877F2; }
+        .share-btn.copy { background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color: #000; }
+
+        .share-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 60px;
+        }
+
+        footer .father-signature {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--rose-accent);
+            margin-top: 8px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--gold-primary);
+            color: #000;
+            font-weight: 700;
+            padding: 12px 28px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas background particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Floating Audio Control -->
+    <div class="audio-bar">
+        <button class="audio-btn" id="mainAudioBtn" onclick="toggleAudio()" title="تشغيل/إيقاف الموسيقى">
+            <i class="fa-solid fa-music"></i>
+        </button>
+        <div class="audio-info">
+            <span id="audioStatusText">أغنية عيد الميلاد 🎵</span>
+        </div>
+    </div>
+
+    <!-- HTML5 Audio Tag -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="birthday.mp3" type="audio/mpeg">
+        <source src="images/birthday.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+
+        <!-- Hero Header -->
+        <header class="hero">
+            <div class="crown-badge">👑</div>
+            <h1 class="main-title">الأميرة نَفَس</h1>
+            <div class="sub-title">✨ تكتمل عامها الأول اليوم ✨</div>
+
+            <div class="poetic-card">
+                <p class="poetic-text">
+                    قبل عامٍ في مثل هذا اليوم، أشرقت شمسٌ جديدة في حياتنا..<br>
+                    ولدت طفلتنا الجميلة <span class="highlight-gold">"نَفَس"</span>، فملأت دنيانا دِفئاً وضياءً.<br>
+                    كل ضحكةٍ منكِ كانت قصيدة حُب، وكل خطوة كانت بشارة فرح.<br>
+                    حفظكِ الله يا زهرة عمري ونبض قلبي.. دمتِ لنا عِيداً دائماً.
+                </p>
+            </div>
+        </header>
+
+        <!-- Section: Video Slideshow -->
+        <div class="section-header">
+            <h2><i class="fa-solid fa-film"></i> شريط الذكريات السينمائي</h2>
+            <p>عرض فيديو تفاعلي يستعرض أجمل لحظات العام الأول لـ نَفَس</p>
+        </div>
+
+        <!-- Video Player Display Container -->
+        <div class="video-slideshow-wrapper">
+            <div class="cinematic-container" id="slidesContainer">
+                
+                <!-- Slide 1 -->
+                <div class="slide-item active" data-index="0">
+                    <img src="images/nafas1.jpg" alt="نفس - النظرة الأولى" onerror="handleImageError(this, 1)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">النظرة الأولى ✨</div>
+                        <div class="slide-caption-desc">لحظة وصولكِ التي غَيّرت كل معالم دنيانا</div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="slide-item" data-index="1">
+                    <img src="images/nafas2.jpg" alt="نفس - ضحكة القلب" onerror="handleImageError(this, 2)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">ضحكة تُنير الكون 💖</div>
+                        <div class="slide-caption-desc">ابتسامتكِ الصافية هي موسيقى منزلنا اليومية</div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="slide-item" data-index="2">
+                    <img src="images/nafas3.jpg" alt="نفس - الخطوات الأولى" onerror="handleImageError(this, 3)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">براءة الأطفال 🧸</div>
+                        <div class="slide-caption-desc">عيونٌ مليئة بالتساؤل والرقة والجمال</div>
+                    </div>
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="slide-item" data-index="3">
+                    <img src="images/nafas4.jpg" alt="نفس - عام من السعادة" onerror="handleImageError(this, 4)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">عام كامل من الحب 🌸</div>
+                        <div class="slide-caption-desc">365 يوماً من البهجة وحلاوة الأيام</div>
+                    </div>
+                </div>
+
+                <!-- Slide 5 -->
+                <div class="slide-item" data-index="4">
+                    <img src="images/nafas5.jpg" alt="نفس - أميرة العائلة" onerror="handleImageError(this, 5)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">أميرة القلوب 👑</div>
+                        <div class="slide-caption-desc">تربعتِ على عرش المحبة في قلوب الجميع</div>
+                    </div>
+                </div>
+
+                <!-- Slide 6 -->
+                <div class="slide-item" data-index="5">
+                    <img src="images/nafas6.jpg" alt="نفس - الضحكات واللعب" onerror="handleImageError(this, 6)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">فرحة العمر 🌟</div>
+                        <div class="slide-caption-desc">مع كل صباح يزداد حبكِ وتألقكِ في حياتنا</div>
+                    </div>
+                </div>
+
+                <!-- Slide 7 -->
+                <div class="slide-item" data-index="6">
+                    <img src="images/nafas7.jpg" alt="نفس - يوم الميلاد" onerror="handleImageError(this, 7)">
+                    <div class="slide-overlay"></div>
+                    <div class="slide-caption-box">
+                        <div class="slide-caption-title">عيد ميلاد سعيد يا نَفَس 🎂</div>
+                        <div class="slide-caption-desc">عقبال 100 عام من الصحة والتألق والسعادة</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Video Controls Bar -->
+            <div class="video-controls">
+                <button class="control-btn" onclick="prevSlide()" title="الصورة السابقة"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="control-btn" id="playPauseBtn" onclick="togglePlay()" title="إيقاف/تشغيل العرض"><i class="fa-solid fa-pause"></i></button>
+                <button class="control-btn" onclick="nextSlide()" title="الصورة التالية"><i class="fa-solid fa-forward-step"></i></button>
+                
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="slideProgress"></div>
+                </div>
+
+                <button class="control-btn" onclick="triggerConfetti()" title="إطلاق الزينة والاحتفال 🎉"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                <button class="control-btn" onclick="toggleFullscreen()" title="عرض شاشة كاملة"><i class="fa-solid fa-expand"></i></button>
+            </div>
+        </div>
+
+        <!-- Uploader helper (In case user opens directly or wants to test local files) -->
+        <div class="upload-helper-box">
+            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور نَفَس:</strong> قم بوضع الصور داخل مجلد <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك مباشرة لتجربتها الآن:</p>
+            <label class="btn-custom-upload">
+                <i class="fa-solid fa-image"></i> اختر صور نَفَس من جهازك
+                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none" onchange="loadUserPhotos(event)">
+            </label>
+            <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
+                <i class="fa-solid fa-music"></i> اختر ملف أغنية (MP3)
+                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
+            </label>
+        </div>
+
+        <!-- Section: Interactive Birthday Cake -->
+        <div class="cake-section">
+            <div class="section-header" style="margin-top:0">
+                <h2>🎂 شمعة العام الأول</h2>
+                <p>اضغط على الزر لإطفاء الشمعة والتمني لـ نَفَس بأجمل الأمنيات!</p>
+            </div>
+
+            <div class="cake-container" onclick="blowCandle()">
+                <div class="cake-plate"></div>
+                <div class="cake-layer-1"></div>
+                <div class="cake-layer-2">
+                    <div class="cake-icing"></div>
+                </div>
+                <div class="candle"></div>
+                <div class="flame" id="candleFlame"></div>
+            </div>
+
+            <button class="blow-btn" onclick="blowCandle()"><i class="fa-solid fa-wind"></i> اطفئ الشمعة واحتفل مع نَفَس!</button>
+        </div>
+
+        <!-- Section: Family Wishes Wall -->
+        <div class="wishes-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-heart"></i> دفتر التهاني والأمنيات</h2>
+                <p>سجّل تهنئتك الجميلة لتبقى ذكرى غالية لـ نَفَس عندما تكبر</p>
+            </div>
+
+            <div class="wish-form-card">
+                <form id="wishForm" onsubmit="saveWish(event)">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> اسمك الكريِم:</label>
+                        <input type="text" class="form-input" id="wishAuthor" placeholder="مثال: الخال أحمد / الجدة أم كريم..." required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-envelope"></i> تهنئتك والأمنيات الطيبة لـ نَفَس:</label>
+                        <textarea class="form-textarea" id="wishText" rows="3" placeholder="اكتب كلمتك الطيبة هنا..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit-wish"><i class="fa-solid fa-paper-plane"></i> إرسال التهنئة الآن 💌</button>
+                </form>
+            </div>
+
+            <!-- Wishes Grid Display -->
+            <div class="wishes-grid" id="wishesGrid">
+                <!-- Initial sample wishes from family -->
+                <div class="wish-item-card">
+                    <div class="wish-author">والدكِ المحب: كريم ❤️</div>
+                    <div class="wish-rel">والد الأميرة</div>
+                    <div class="wish-text">يا نَفَس حياتي، كل عام وأنتِ النور الذي يُضيء دربي، حفظك الله وجعلكِ سنداً وفرحة دائمة.</div>
+                </div>
+
+                <div class="wish-item-card">
+                    <div class="wish-author">عائلة نَفَس 💖</div>
+                    <div class="wish-rel">الأهل والأقارب</div>
+                    <div class="wish-text">عيد ميلاد سعيد يا أحلى نَفَس! عقبال مائة عام ملئ بالصحة والتوفيق والنجاح.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Share with Family & Socials -->
+        <div class="share-section">
+            <div class="share-title">📢 شارك الفرحة مع الأهل والأصدقاء</div>
+            <p style="color: rgba(255,255,255,0.8); font-size:1.05rem;">أرسل هذه الصفحة الفخمة للعائلة على واتساب وفيس بوك لشاركونا الفرحة</p>
+            
+            <div class="share-buttons">
+                <button class="share-btn whatsapp" onclick="shareWhatsApp()">
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.3rem;"></i> إرسال عبر واتساب
+                </button>
+                <button class="share-btn facebook" onclick="shareFacebook()">
+                    <i class="fa-brands fa-facebook" style="font-size:1.3rem;"></i> مشاركة على فيس بوك
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fa-solid fa-link"></i> نسخ رابط الصفحة
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>صُممت هذه الصفحة بكل حب وشغف بمناسبة عيد الميلاد الأول للأميرة</p>
+            <div class="father-signature">❤️ نَفَس كريم ❤️</div>
+        </footer>
+
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast" id="toast">تم نسخ الرابط بنجاح! 🎉</div>
+
+    <script>
+        /* Global State Variables */
+        let currentIndex = 0;
+        const slides = document.querySelectorAll('.slide-item');
+        const totalSlides = slides.length;
+        let isPlaying = true;
+        let slideInterval = null;
+        let progressInterval = null;
+        const duration = 6000; // 6 seconds per photo
+        let startTime = Date.now();
+
+        /* Canvas Particle Effect */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = -(Math.random() * 0.6 + 0.2);
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.color = Math.random() > 0.5 ? '#D4AF37' : '#E88D95';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y < -10) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 65; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* Slideshow Engine with Ken Burns Zoom & Progress Bar */
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+            currentIndex = index;
+            resetProgress();
+        }
+
+        function nextSlide() {
+            let next = (currentIndex + 1) % totalSlides;
+            showSlide(next);
+        }
+
+        function prevSlide() {
+            let prev = (currentIndex - 1 + totalSlides) % totalSlides;
+            showSlide(prev);
+        }
+
+        function resetProgress() {
+            const progressBar = document.getElementById('slideProgress');
+            progressBar.style.width = '0%';
+            startTime = Date.now();
+        }
+
+        function startSlideshow() {
+            if (slideInterval) clearInterval(slideInterval);
+            if (progressInterval) clearInterval(progressInterval);
+
+            startTime = Date.now();
+            slideInterval = setInterval(() => {
+                nextSlide();
+            }, duration);
+
+            progressInterval = setInterval(() => {
+                if (isPlaying) {
+                    let elapsed = Date.now() - startTime;
+                    let pct = Math.min((elapsed / duration) * 100, 100);
+                    document.getElementById('slideProgress').style.width = pct + '%';
+                }
+            }, 50);
+        }
+
+        function togglePlay() {
+            const btn = document.getElementById('playPauseBtn');
+            if (isPlaying) {
+                clearInterval(slideInterval);
+                clearInterval(progressInterval);
+                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            } else {
+                startSlideshow();
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        startSlideshow();
+
+        /* Fallback Image Generator SVG if image file not present yet */
+        function handleImageError(img, num) {
+            // Create a gorgeous SVG placeholder with princess crown & name
+            const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2A1635"/>
+                        <stop offset="50%" stop-color="#502559"/>
+                        <stop offset="100%" stop-color="#140C1D"/>
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grad)"/>
+                <circle cx="400" cy="240" r="130" fill="none" stroke="#D4AF37" stroke-width="3" opacity="0.6"/>
+                <text x="400" y="210" font-family="'Aref Ruqaa', serif" font-size="70" fill="#D4AF37" text-anchor="middle">👑</text>
+                <text x="400" y="290" font-family="'Tajawal', sans-serif" font-size="42" font-weight="bold" fill="#F9F295" text-anchor="middle">الأميرة نَفَس</text>
+                <text x="400" y="340" font-family="'Amiri', serif" font-size="24" fill="#E88D95" text-anchor="middle">صورة رقم ${num} - ضعي صورتكِ هنا</text>
+            </svg>`;
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
+        /* Local File Picker Loaders for instant live preview */
+        function loadUserPhotos(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            for (let i = 0; i < Math.min(files.length, totalSlides); i++) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = slides[i].querySelector('img');
+                    if (img) img.src = e.target.result;
+                };
+                reader.readAsDataURL(files[i]);
+            }
+            showToast('تم تحميل الصور المحددة بنجاح! 🎉');
+            triggerConfetti();
+        }
+
+        function loadUserAudio(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const audioPlayer = document.getElementById('bgMusic');
+            audioPlayer.src = URL.createObjectURL(file);
+            audioPlayer.play();
+            audioIsPlaying = true;
+            document.getElementById('audioStatusText').innerText = 'تشغيل أغنيتك الخاصة 🎵';
+            showToast('جاري تشغيل الأغنية المحددة! 🎶');
+        }
+
+        /* Web Audio API Synthesizer Fallback for Happy Birthday */
+        let audioCtx = null;
+        let audioIsPlaying = false;
+
+        function playSynthesizedBirthdaySong() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const notes = [
+                { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
+                { note: 'A4', duration: 0.8 }, { note: 'G4', duration: 0.8 },
+                { note: 'C5', duration: 0.8 }, { note: 'B4', duration: 1.2 },
+                
+                { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
+                { note: 'A4', duration: 0.8 }, { note: 'G4', duration: 0.8 },
+                { note: 'D5', duration: 0.8 }, { note: 'C5', duration: 1.2 },
+                
+                { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
+                { note: 'G5', duration: 0.8 }, { note: 'E5', duration: 0.8 },
+                { note: 'C5', duration: 0.8 }, { note: 'B4', duration: 0.8 },
+                { note: 'A4', duration: 1.2 },
+                
+                { note: 'F5', duration: 0.4 }, { note: 'F5', duration: 0.4 },
+                { note: 'E5', duration: 0.8 }, { note: 'C5', duration: 0.8 },
+                { note: 'D5', duration: 0.8 }, { note: 'C5', duration: 1.5 }
+            ];
+
+            const freqs = {
+                'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25,
+                'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99
+            };
+
+            let now = audioCtx.currentTime;
+            notes.forEach(item => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freqs[item.note], now);
+
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + item.duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + item.duration);
+
+                now += item.duration;
+            });
+        }
+
+        function toggleAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            const btnIcon = document.querySelector('#mainAudioBtn i');
+            const statusText = document.getElementById('audioStatusText');
+
+            if (!audioIsPlaying) {
+                // Try playing HTML5 audio first
+                bgMusic.play().then(() => {
+                    audioIsPlaying = true;
+                    btnIcon.className = 'fa-solid fa-pause';
+                    statusText.innerText = 'تشغيل الموسيقى 🎶';
+                }).catch(() => {
+                    // Fallback to Web Audio Synth
+                    playSynthesizedBirthdaySong();
+                    audioIsPlaying = true;
+                    btnIcon.className = 'fa-solid fa-music';
+                    statusText.innerText = 'عزف لحن عيد الميلاد 🎵';
+                });
+            } else {
+                bgMusic.pause();
+                audioIsPlaying = false;
+                btnIcon.className = 'fa-solid fa-music';
+                statusText.innerText = 'إيقاف الموسيقى 🔇';
+            }
+        }
+
+        // Auto start audio on user first interaction
+        document.body.addEventListener('click', function() {
+            if (!audioIsPlaying) {
+                toggleAudio();
+            }
+        }, { once: true });
+
+        /* Birthday Cake Flame Blowing & Confetti */
+        function blowCandle() {
+            const flame = document.getElementById('candleFlame');
+            flame.classList.add('off');
+            triggerConfetti();
+            showToast('🎉 تم إطفاء الشمعة! كل عام وأنتِ بألف خير يا نَفَس 🎉');
+            
+            setTimeout(() => {
+                flame.classList.remove('off');
+            }, 6000);
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        /* Wishes Board Functions */
+        function saveWish(e) {
+            e.preventDefault();
+            const author = document.getElementById('wishAuthor').value.trim();
+            const text = document.getElementById('wishText').value.trim();
+
+            if (!author || !text) return;
+
+            const grid = document.getElementById('wishesGrid');
+            const card = document.createElement('div');
+            card.className = 'wish-item-card';
+            card.innerHTML = `
+                <div class="wish-author">${escapeHtml(author)} 💌</div>
+                <div class="wish-rel">تهنئة حديثة</div>
+                <div class="wish-text">${escapeHtml(text)}</div>
+            `;
+            grid.prepend(card);
+
+            document.getElementById('wishForm').reset();
+            triggerConfetti();
+            showToast('تمت إضافة تهنئتك الجميلة لـ نَفَس ❤️');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        /* Fullscreen Toggle */
+        function toggleFullscreen() {
+            const elem = document.getElementById('slidesContainer');
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        /* Sharing Functions */
+        function shareWhatsApp() {
+            const pageUrl = window.location.href;
+            const text = `🎉 أهلاً بكم في احتفال عيد الميلاد الأول لأميرتنا الصغير "نَفَس"! 💕\nأهلاً بكم في عالم الفرح! شاهدوا الذكريات والتهاني الجميلة عبر الرابط:\n${pageUrl}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareFacebook() {
+            const pageUrl = window.location.href;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast('تم نسخ رابط الصفحة بنجاح! 🎉');
+            }).catch(() => {
+                showToast('تعذر نسخ الرابط تلقائياً');
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
