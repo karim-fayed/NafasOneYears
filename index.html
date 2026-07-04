@@ -2004,7 +2004,7 @@
                             const exists = currentCloudWishes.some(cw => cw.author === lw.author && cw.text === lw.text);
                             if (!exists) currentCloudWishes.unshift(lw);
                         });
-                        _writeRepoFile(WISHES_PATH, { wishes: currentCloudWishes }, 'تلقائي: ترحيل ومزامنة تهاني العائلة المحفوظة 💌', autoToken);
+                        await _writeRepoFile(WISHES_PATH, { wishes: currentCloudWishes }, 'تلقائي: ترحيل ومزامنة تهاني العائلة المحفوظة 💌', autoToken);
                     } catch (e) { }
                 }
 
