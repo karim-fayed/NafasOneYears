@@ -1553,6 +1553,23 @@
 
         // ======== GITHUB TOKEN MODAL ========
         function showGitHubTokenModal(purpose, onConfirm) {
+            if (_ghToken) {
+                // Token is already saved! Execute directly without asking or showing modal
+                showToast('⏳ جاري حفظ التغييرات أونلاين...');
+                onConfirm(_ghToken).then(() => {
+                    showToast('✅ تم حفظ التغييرات لجميع العائلة بنجاح! 🎉');
+                }).catch(err => {
+                    showToast('⚠️ انتهت صلاحية الـ Token المحفوظ - الرجاء إدخاله مجدداً');
+                    _ghToken = '';
+                    try { localStorage.removeItem('nafas_gh_token'); } catch (e) { }
+                    openTokenModalWindow(purpose, onConfirm);
+                });
+                return;
+            }
+            openTokenModalWindow(purpose, onConfirm);
+        }
+
+        function openTokenModalWindow(purpose, onConfirm) {
             const existing = document.getElementById('ghTokenModal');
             if (existing) existing.remove();
             const modal = document.createElement('div');
@@ -1561,9 +1578,9 @@
             modal.innerHTML = `
                 <div style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:1px solid #D4AF37;border-radius:20px;padding:26px;max-width:500px;width:100%;text-align:center;font-family:Cairo,sans-serif;">
                     <div style="font-size:1.6rem;margin-bottom:10px;">🔐 ${purpose}</div>
-                    <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;margin-bottom:14px;">أدخل <strong style="color:#FFD700;">GitHub Token</strong> وسيُحفظ تلقائياً على جهازك.</p>
+                    <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;margin-bottom:14px;">أدخل <strong style="color:#FFD700;">GitHub Token</strong> مرة واحدة فقط وسيتم حفظه على جهازك للأبد.</p>
                     <div style="background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;margin-bottom:14px;text-align:right;">
-                        <p style="color:#D4AF37;font-size:0.8rem;margin-bottom:7px;">📋 كيفية الحصول على Token:</p>
+                        <p style="color:#D4AF37;font-size:0.8rem;margin-bottom:7px;">📋 كيفية الحصول على Token (مرة واحدة فقط):</p>
                         <ol style="color:rgba(255,255,255,0.75);font-size:0.76rem;padding-right:18px;line-height:1.9;margin:0;">
                             <li>افتح: <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=NafasApp" target="_blank" style="color:#FFD700;">github.com/settings/tokens/new</a></li>
                             <li>في <b>Note</b>: اكتب "NafasApp"، اختر <b>public_repo</b> ثم <b>Generate Token</b></li>
@@ -1572,14 +1589,13 @@
                     </div>
                     <input id="ghTokenFieldInput" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:11px 14px;border-radius:30px;border:1.5px solid #D4AF37;background:rgba(0,0,0,0.5);color:#FFF;font-size:0.85rem;margin-bottom:12px;box-sizing:border-box;direction:ltr;letter-spacing:1px;">
                     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
-                        <button id="ghConfirmBtn" style="background:linear-gradient(135deg,#D4AF37,#996515);color:#000;font-weight:700;padding:10px 22px;border-radius:30px;border:none;cursor:pointer;font-size:0.9rem;">✅ تأكيد</button>
+                        <button id="ghConfirmBtn" style="background:linear-gradient(135deg,#D4AF37,#996515);color:#000;font-weight:700;padding:10px 22px;border-radius:30px;border:none;cursor:pointer;font-size:0.9rem;">✅ حفظ الـ Token واعتماده</button>
                         <button onclick="document.getElementById('ghTokenModal').remove()" style="background:rgba(255,255,255,0.07);color:#FFF;padding:10px 18px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;">إلغاء</button>
                     </div>
                     <div id="ghTokenStatus" style="font-size:0.8rem;min-height:18px;"></div>
                 </div>
             `;
             document.body.appendChild(modal);
-            if (_ghToken) document.getElementById('ghTokenFieldInput').value = _ghToken;
 
             document.getElementById('ghConfirmBtn').onclick = async function () {
                 const t = document.getElementById('ghTokenFieldInput').value.trim();
@@ -1588,19 +1604,24 @@
                 document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#FFD700;">⏳ جاري الحفظ...</span>';
                 try {
                     await onConfirm(t);
-                    document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#55FF88;">✅ تم بنجاح! سيظهر للجميع خلال دقيقة.</span>';
-                    setTimeout(() => { const m = document.getElementById('ghTokenModal'); if (m) m.remove(); }, 2500);
+                    document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#55FF88;">✅ تم بنجاح! تم حفظ الـ Token ولن يُطلب منك مجدداً.</span>';
+                    setTimeout(() => { const m = document.getElementById('ghTokenModal'); if (m) m.remove(); }, 2000);
                 } catch (err) {
                     document.getElementById('ghTokenStatus').innerHTML = `<span style="color:#FF5555;">❌ فشل: ${err.message.substring(0, 120)}</span>`;
                 }
             };
         }
 
+        function resetSavedToken() {
+            _ghToken = '';
+            try { localStorage.removeItem('nafas_gh_token'); } catch (e) { }
+            showToast('تم إعادة ضبط الـ Token 🔄');
+        }
+
         function showSaveToGitHubModal() {
             showGitHubTokenModal('حفظ قائمة الأغاني للجميع', async (token) => {
                 const ok = await _writeRepoFile(PLAYLIST_PATH, { tracks: playlistQueue }, 'تحديث قائمة أغاني نَفَس 🎵', token);
                 if (!ok) throw new Error('فشل الحفظ في GitHub');
-                showToast('تم حفظ قائمة الأغاني للجميع! 🎉');
             });
         }
 
