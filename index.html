@@ -458,22 +458,89 @@
             transition: width 0.1s linear;
         }
 
-        /* Custom Local Image Uploader Helper (Hidden for Public Visitors) */
-        .upload-helper-box {
-            display: none !important; /* Hidden from public */
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px dashed var(--card-border);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin: 25px auto 40px;
-            max-width: 750px;
+        /* YouTube Music & Audio Section */
+        .youtube-music-section {
+            margin: 30px auto;
+            max-width: 850px;
         }
 
-        .upload-helper-box p {
+        .music-box-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .music-box-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+        }
+
+        .music-box-subtitle {
             font-size: 0.95rem;
             color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .yt-input-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .yt-input {
+            max-width: 500px;
+            flex: 1;
+            min-width: 260px;
+            padding: 12px 18px;
+            font-size: 0.95rem;
+            border-radius: 30px !important;
+            background: rgba(0,0,0,0.5) !important;
+            border: 1px solid rgba(212, 175, 55, 0.4) !important;
+            color: #FFF !important;
+        }
+
+        .btn-yt-play {
+            background: linear-gradient(135deg, #FF0000, #B30000);
+            color: #FFF;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-yt-play:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .custom-audio-file-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .btn-custom-upload {
@@ -978,26 +1045,36 @@
             </div>
         </div>
 
-        <!-- Uploader helper (In case user opens directly or wants to test local files / YouTube link) -->
-        <div class="upload-helper-box scroll-reveal">
-            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور وأغاني نَفَس:</strong> قم بوضع الصور داخل مجلد <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك وأغنيتك مباشرة هنا:</p>
-            <label class="btn-custom-upload">
-                <i class="fa-solid fa-image"></i> اختر صور نَفَس من جهازك
-                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none" onchange="loadUserPhotos(event)">
-            </label>
-            <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
-                <i class="fa-solid fa-music"></i> اختر ملف أغنية (MP3)
-                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
-            </label>
+        <!-- Section: Custom YouTube Music & Audio Player -->
+        <div class="youtube-music-section scroll-reveal">
+            <div class="music-box-card">
+                <div class="music-box-title">
+                    <i class="fa-brands fa-youtube" style="color:#FF0000; font-size:1.6rem;"></i>
+                    <span>تشغيل أغنية عيد الميلاد من يوتيوب 🎵</span>
+                </div>
+                <p class="music-box-subtitle">ضع رابط أي فيديو أو أغنية من يوتيوب هنا وسيتم تشغيل الصوت مباشرة في خلفية الموقع!</p>
+                
+                <div class="yt-input-row">
+                    <input type="text" id="ytUrlInput" class="form-input yt-input" placeholder="ضع رابط أغنية يوتيوب هنا (مثال: https://youtu.be/... أو https://www.youtube.com/watch?v=...)">
+                    <button type="button" onclick="playYouTubeFromInput()" class="btn-yt-play">
+                        <i class="fa-brands fa-youtube"></i> تشغيل الصوت 🎵
+                    </button>
+                </div>
 
-            <!-- YouTube Audio Link Input -->
-            <div style="margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-                <input type="text" id="ytUrlInput" class="form-input" style="max-width: 380px; padding: 10px 15px; font-size: 0.9rem;" placeholder="ضع رابط أغنية من يوتيوب هنا (مثلاً: https://youtu.be/...)">
-                <button type="button" onclick="playYouTubeFromInput()" class="btn-custom-upload" style="background: linear-gradient(135deg, #FF0000, #CC0000); color: #FFF;">
-                    <i class="fa-brands fa-youtube"></i> تشغيل صوت يوتيوب 🎵
-                </button>
+                <div class="custom-audio-file-row">
+                    <span>أو اختر ملف أغنية (MP3) من جهازك:</span>
+                    <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000;">
+                        <i class="fa-solid fa-file-audio"></i> اختر ملف MP3
+                        <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
+                    </label>
+                    <label class="btn-custom-upload" style="background: rgba(255,255,255,0.1); color:#FFF; margin-right:5px;">
+                        <i class="fa-solid fa-images"></i> اختيار الصور محلياً
+                        <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none" onchange="loadUserPhotos(event)">
+                    </label>
+                </div>
+
+                <div id="ytAudioContainer" style="display:none;"></div>
             </div>
-            <div id="ytAudioContainer" style="display:none;"></div>
         </div>
 
         <!-- Section: Interactive Birthday Cake -->
