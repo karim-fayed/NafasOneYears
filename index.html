@@ -1665,25 +1665,60 @@
             playTrackAtIndex(currentPlaylistIndex);
         }
 
-        function playTrackAtIndex(index) {
+        async function playTrackAtIndex(index) {
             if (playlistQueue.length === 0) return;
             currentPlaylistIndex = (index + playlistQueue.length) % playlistQueue.length;
             const track = playlistQueue[currentPlaylistIndex];
+
+            const ap = document.getElementById('bgMusic');
+            const statusEl = document.getElementById('audioStatusText');
+            const btn = document.querySelector('#mainAudioBtn i');
+
             if (track.type === 'yt') {
-                if (ytPlayer && ytPlayer.loadVideoById) {
-                    ytPlayer.loadVideoById(track.id);
-                    ytPlayer.playVideo();
-                    isYouTubeAudio = true; audioIsPlaying = true;
-                    const statusEl = document.getElementById('audioStatusText');
-                    if (statusEl) statusEl.innerText = track.title;
-                    const btn = document.querySelector('#mainAudioBtn i');
-                    if (btn) btn.className = 'fa-brands fa-youtube';
-                    showToast('▶️ ' + track.title);
+                showToast('⏳ جاري تجهيز الأغنية بدون إعلانات 🎵');
+
+                // Try ad-free direct audio streams (Invidious / Piped)
+                const adFreeStreams = [
+                    `https://invidious.nerdvpn.de/latest_version?id=${track.id}&itag=140`,
+                    `https://invidious.drgns.space/latest_version?id=${track.id}&itag=140`,
+                    `https://invidious.no-name-given.de/latest_version?id=${track.id}&itag=140`
+                ];
+
+                let streamPlayed = false;
+                if (ap) {
+                    for (const streamUrl of adFreeStreams) {
+                        try {
+                            ap.src = streamUrl;
+                            await ap.play();
+                            streamPlayed = true;
+                            audioIsPlaying = true;
+                            isYouTubeAudio = false;
+                            if (statusEl) statusEl.innerText = track.title;
+                            if (btn) btn.className = 'fa-solid fa-music';
+                            showToast('▶️ ' + track.title + ' (بدون إعلانات ✨)');
+                            break;
+                        } catch (e) {
+                            // Try next stream endpoint
+                        }
+                    }
+                }
+
+                if (!streamPlayed) {
+                    // Fallback to iframe player if direct audio stream fails
+                    if (ytPlayer && ytPlayer.loadVideoById) {
+                        ytPlayer.loadVideoById(track.id);
+                        ytPlayer.playVideo();
+                        isYouTubeAudio = true; audioIsPlaying = true;
+                        if (statusEl) statusEl.innerText = track.title;
+                        if (btn) btn.className = 'fa-brands fa-youtube';
+                        showToast('▶️ ' + track.title);
+                    }
                 }
             } else if (track.type === 'mp3') {
-                const ap = document.getElementById('bgMusic');
                 if (ap) { ap.src = track.src; ap.play(); }
                 audioIsPlaying = true; isYouTubeAudio = false;
+                if (statusEl) statusEl.innerText = track.title;
+                if (btn) btn.className = 'fa-solid fa-music';
                 showToast('▶️ ' + track.title);
             }
             updatePlaylistUI();
