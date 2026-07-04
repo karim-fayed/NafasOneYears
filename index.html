@@ -458,9 +458,9 @@
             transition: width 0.1s linear;
         }
 
-        /* YouTube Music & Audio Section (Hidden for Public Visitors) */
+        /* YouTube Music & Audio Section */
         .youtube-music-section {
-            display: none !important; /* Hidden from general public */
+            display: block;
             margin: 30px auto;
             max-width: 850px;
         }
@@ -935,6 +935,8 @@
                     ولدت طفلتنا الجميلة <span class="highlight-gold">"نَفَس"</span>، فملأت دنيانا دِفئاً وضياءً.<br>
                     كل ضحكةٍ منكِ كانت قصيدة حُب، وكل خطوة كانت بشارة فرح.<br>
                     حفظكِ الله يا زهرة عمري ونبض قلبي.. دمتِ لنا عِيداً دائماً.
+                </p>
+            </div>
         </header>
 
         <!-- Section: Video Slideshow -->
@@ -1208,11 +1210,8 @@
         let startTime = Date.now();
         let confettiTimeout = null;
 
-        // Show upload helper ONLY if ?edit=1 or ?admin=1 is in URL
-        if (window.location.search.includes('edit') || window.location.search.includes('admin')) {
-            const uploader = document.querySelector('.upload-helper-box');
-            if (uploader) uploader.style.setProperty('display', 'block', 'important');
-        }
+        const uploader = document.querySelector('.upload-helper-box');
+        if (uploader) uploader.style.display = 'block';
 
         /* Canvas Particle Effect */
         const canvas = document.getElementById('particleCanvas');
@@ -1361,11 +1360,9 @@
         let playlistQueue = [];
         let currentPlaylistIndex = 0;
 
-        // Show YouTube music & playlist controls ONLY if ?edit=1 or ?admin=1 is in URL
-        if (window.location.search.includes('edit') || window.location.search.includes('admin')) {
-            const ytSection = document.querySelector('.youtube-music-section');
-            if (ytSection) ytSection.style.setProperty('display', 'block', 'important');
-        }
+        // Ensure YouTube music & playlist controls are always visible
+        const ytSection = document.querySelector('.youtube-music-section');
+        if (ytSection) ytSection.style.display = 'block';
 
         /* YouTube Audio Player Integration */
         let ytPlayer = null;
