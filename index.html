@@ -431,8 +431,9 @@
             transition: width 0.1s linear;
         }
 
-        /* Custom Local Image Uploader Helper */
+        /* Custom Local Image Uploader Helper (Hidden for Public Visitors) */
         .upload-helper-box {
+            display: none !important; /* Hidden from public */
             background: rgba(255, 255, 255, 0.04);
             border: 1px dashed var(--card-border);
             border-radius: 16px;
@@ -1068,6 +1069,13 @@
         let progressInterval = null;
         const duration = 7000; // 7 seconds per photo
         let startTime = Date.now();
+        let confettiTimeout = null;
+
+        // Show upload helper ONLY if ?edit=1 or ?admin=1 is in URL
+        if (window.location.search.includes('edit') || window.location.search.includes('admin')) {
+            const uploader = document.querySelector('.upload-helper-box');
+            if (uploader) uploader.style.setProperty('display', 'block', 'important');
+        }
 
         /* Canvas Particle Effect */
         const canvas = document.getElementById('particleCanvas');
@@ -1134,6 +1142,12 @@
             });
             currentIndex = index;
             resetProgress();
+
+            // Automatically trigger celebratory confetti burst 2 seconds into each photo!
+            if (confettiTimeout) clearTimeout(confettiTimeout);
+            confettiTimeout = setTimeout(() => {
+                if (isPlaying) triggerConfetti();
+            }, 2000);
         }
 
         function nextSlide() {
