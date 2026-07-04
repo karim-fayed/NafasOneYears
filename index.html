@@ -2033,6 +2033,10 @@
             }
         }
 
+        // Fetch wishes from GitHub repo on page load and poll every 10 seconds for live family updates!
+        fetchWishesFromRepo();
+        setInterval(fetchWishesFromRepo, 10000);
+
         async function saveWish(e) {
             e.preventDefault();
             const authorInput = document.getElementById('wishAuthor');
