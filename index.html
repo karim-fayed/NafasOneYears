@@ -1943,41 +1943,61 @@
         }
 
         /* =====================================================
-           WISHES ENGINE v2.0 — localStorage + GitHub Repo
+           WISHES ENGINE v3.0 — Live Family Wishes Cloud Sync
            ===================================================== */
 
-        // Load wishes: first from localStorage, then from repo
-        async function fetchWishesFromRepo() {
-            // Load from localStorage first
+        function getAutoSyncToken() {
             try {
-                const localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
-                if (localWishes.length > 0) {
-                    const grid = document.getElementById('wishesGrid');
-                    if (grid) {
-                        grid.innerHTML = '';
-                        localWishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة', w.timestamp, false));
-                    }
-                }
+                if (_ghToken) return _ghToken;
+                const saved = localStorage.getItem('nafas_gh_token');
+                if (saved) return saved;
+            } catch (e) { }
+            return '';
+        }
+
+        async function fetchWishesFromRepo() {
+            // 1. Load local wishes from localStorage
+            let localWishes = [];
+            try {
+                localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
             } catch (e) { }
 
-            // Then fetch from GitHub repo (if wishes.json exists)
+            // 2. Fetch from GitHub repo (wishes.json)
+            let cloudWishes = [];
             try {
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/wishes.json?t=${Date.now()}`;
                 const res = await fetch(url);
-                if (!res.ok) return;
-                const data = await res.json();
-                if (!data || !Array.isArray(data.wishes) || data.wishes.length === 0) return;
-                const grid = document.getElementById('wishesGrid');
-                if (!grid) return;
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.wishes)) {
+                        cloudWishes = data.wishes;
+                    }
+                }
+            } catch (err) { }
+
+            // 3. Merge cloud wishes + local wishes seamlessly without duplicates
+            const mergedMap = new Map();
+            cloudWishes.forEach(w => {
+                const key = (w.author + '_' + w.text).trim();
+                mergedMap.set(key, w);
+            });
+            localWishes.forEach(w => {
+                const key = (w.author + '_' + w.text).trim();
+                if (!mergedMap.has(key)) {
+                    mergedMap.set(key, w);
+                }
+            });
+
+            const allWishes = Array.from(mergedMap.values());
+            allWishes.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            const grid = document.getElementById('wishesGrid');
+            if (grid && allWishes.length > 0) {
                 grid.innerHTML = '';
-                data.wishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة عائلية', w.timestamp, false));
-                // Also save to localStorage for offline use
-                localStorage.setItem('nafas_local_wishes', JSON.stringify(data.wishes));
-            } catch (err) {
-                // Keep what we already showed
+                allWishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة عائلية', w.timestamp, false));
+                try { localStorage.setItem('nafas_local_wishes', JSON.stringify(allWishes)); } catch (e) { }
             }
         }
-        fetchWishesFromRepo();
 
         async function saveWish(e) {
             e.preventDefault();
@@ -1996,39 +2016,47 @@
             const timestamp = Date.now();
             const wishData = { author, text, rel, timestamp };
 
-            // Show it immediately
+            // Render on screen immediately
             renderWishCard(author, text, rel, timestamp, true);
             if (document.getElementById('wishForm')) document.getElementById('wishForm').reset();
             triggerConfetti();
-            showToast('تم حفظ تهنئتك! 💌');
+            showToast('تم حفظ تهنئتك الجميلة! 💌');
 
-            // Save to localStorage
+            // Save to localStorage immediately
             try {
                 const localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
-                localWishes.unshift(wishData);
-                localStorage.setItem('nafas_local_wishes', JSON.stringify(localWishes));
+                const isDup = localWishes.some(w => w.author === author && w.text === text);
+                if (!isDup) {
+                    localWishes.unshift(wishData);
+                    localStorage.setItem('nafas_local_wishes', JSON.stringify(localWishes));
+                }
             } catch (e) { }
 
-            // If admin token available: save permanently to GitHub repo
-            if (_ghToken) {
+            // Sync to GitHub wishes.json if token is available
+            const tokenToUse = getAutoSyncToken();
+            if (tokenToUse) {
                 try {
                     let wishes = [];
                     try {
-                        const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/wishes.json?t=${Date.now()}`;
-                        const r = await fetch(url);
-                        if (r.ok) { const d = await r.json(); if (Array.isArray(d.wishes)) wishes = d.wishes; }
+                        const data = await _readRepoFile(WISHES_PATH);
+                        if (data && Array.isArray(data.wishes)) wishes = data.wishes;
                     } catch (e) { }
-                    wishes.unshift(wishData);
-                    await _writeRepoFile(WISHES_PATH, { wishes }, 'إضافة تهنئة 💌', _ghToken);
-                    showToast('✅ تم حفظ تهنئتك للجميع!');
+
+                    const isDup = wishes.some(w => w.author === wishData.author && w.text === wishData.text);
+                    if (!isDup) {
+                        wishes.unshift(wishData);
+                        await _writeRepoFile(WISHES_PATH, { wishes }, 'إضافة تهنئة جديدة من العائلة 💌', tokenToUse);
+                        showToast('✅ تم حفظ تهنئتك لجميع أفراد العائلة أونلاين!');
+                    }
                 } catch (err) {
-                    console.log('Wish saved locally only:', err.message);
+                    console.log('Wish saved locally:', err.message);
                 }
             }
         }
 
         function renderWishCard(author, text, rel, timestamp, prepend = true) {
             const grid = document.getElementById('wishesGrid');
+            if (!grid) return;
             const card = document.createElement('div');
             card.className = 'wish-item-card scroll-reveal revealed';
 
