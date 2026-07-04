@@ -1405,159 +1405,195 @@
         }
 
         /* =========================================================
-           PLAYLIST ENGINE v3.0 — playlist.json على GitHub Pages
+           NAFAS DATA ENGINE v4.0 — GitHub Repo as Cloud Database
+           READ: public GitHub raw URL (no auth, works for everyone)
+           WRITE: GitHub Contents API with Token (admin saves data)
            ========================================================= */
-        const PLAYLIST_JSON_URL = './playlist.json';
-        const REPO_OWNER = 'karim-fayed';
-        const REPO_NAME  = 'NafasOneYears';
-        const REPO_BRANCH = 'main';
-        const PLAYLIST_FILE_PATH = 'playlist.json';
+        const REPO_OWNER        = 'karim-fayed';
+        const REPO_NAME         = 'NafasOneYears';
+        const REPO_BRANCH       = 'main';
+        const PLAYLIST_PATH     = 'playlist.json';
+        const WISHES_PATH       = 'wishes.json';
 
-        // تحميل فوري من localStorage (بدون تأخير)
-        try {
-            const savedLocal = localStorage.getItem('nafas_playlist_v3');
-            if (savedLocal) {
-                playlistQueue = JSON.parse(savedLocal);
+        // GitHub token stored locally (never sent to 3rd parties)
+        let _ghToken = '';
+        try { _ghToken = localStorage.getItem('nafas_gh_token') || ''; } catch(e) {}
+
+        function _storeToken(t) {
+            _ghToken = t.trim();
+            try { if (_ghToken) localStorage.setItem('nafas_gh_token', _ghToken); } catch(e) {}
+        }
+
+        // ---- READ file from GitHub repo (public, no auth) ----
+        async function _readRepoFile(path) {
+            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${path}?t=${Date.now()}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json();
+        }
+
+        // ---- WRITE file to GitHub repo via Contents API ----
+        async function _writeRepoFile(path, data, commitMsg, token) {
+            const json = JSON.stringify(data, null, 2);
+            const encoded = btoa(unescape(encodeURIComponent(json)));
+            let sha = '';
+            try {
+                const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+                });
+                if (r.ok) { const d = await r.json(); sha = d.sha || ''; }
+            } catch(e) {}
+            const body = { message: commitMsg, content: encoded, branch: REPO_BRANCH };
+            if (sha) body.sha = sha;
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`GitHub API: ${res.status} - ${errText}`);
             }
-        } catch (e) { }
+            return true;
+        }
 
-        // Always fetch fresh playlist.json from GitHub Pages (the authoritative source for all visitors)
+        // ======== PLAYLIST ========
+        // Load instantly from localStorage
+        try {
+            const cached = localStorage.getItem('nafas_playlist_v4');
+            if (cached) { playlistQueue = JSON.parse(cached); }
+        } catch(e) {}
+
+        // Then fetch fresh from GitHub Pages
         async function fetchPlaylistJson() {
             try {
-                const res = await fetch(PLAYLIST_JSON_URL + '?t=' + Date.now());
-                if (!res.ok) return;
-                const data = await res.json();
-                if (data && Array.isArray(data.tracks) && data.tracks.length > 0) {
+                const data = await _readRepoFile(PLAYLIST_PATH);
+                if (data && Array.isArray(data.tracks)) {
                     playlistQueue = data.tracks;
-                    localStorage.setItem('nafas_playlist_v3', JSON.stringify(playlistQueue));
+                    localStorage.setItem('nafas_playlist_v4', JSON.stringify(playlistQueue));
                     updatePlaylistUI();
                 }
-            } catch (err) {
-                console.log('Using cached local playlist');
+            } catch(e) {
+                console.log('Playlist: using local cache');
             }
         }
         fetchPlaylistJson();
 
         function saveLocalPlaylist() {
-            try {
-                localStorage.setItem('nafas_playlist_v3', JSON.stringify(playlistQueue));
-            } catch (e) { }
+            try { localStorage.setItem('nafas_playlist_v4', JSON.stringify(playlistQueue)); } catch(e) {}
         }
 
-        // Save playlist permanently to GitHub repository file (visible to ALL visitors)
-        async function savePlaylistToGitHub(token) {
-            const content = JSON.stringify({ tracks: playlistQueue }, null, 2);
-            const encoded = btoa(unescape(encodeURIComponent(content)));
-            let sha = '';
+        // ======== WISHES ========
+        async function fetchWishesFromRepo() {
             try {
-                const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PLAYLIST_FILE_PATH}`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                if (getRes.ok) {
-                    const fileData = await getRes.json();
-                    sha = fileData.sha || '';
-                }
-            } catch (e) { }
-
-            const body = { message: 'تحديث قائمة أغاني نَفَس 🎵', content: encoded, branch: REPO_BRANCH };
-            if (sha) body.sha = sha;
-
-            const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PLAYLIST_FILE_PATH}`, {
-                method: 'PUT',
-                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            return putRes.ok;
+                const data = await _readRepoFile(WISHES_PATH);
+                if (!data || !Array.isArray(data.wishes)) return;
+                const grid = document.getElementById('wishesGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                data.wishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة عائلية', w.timestamp, false));
+            } catch(e) { /* keep sample cards */ }
         }
 
-        function showSaveToGitHubModal() {
-            const existing = document.getElementById('ghSaveModal');
-            if (existing) { existing.style.display = 'flex'; return; }
+        // Save a new wish to GitHub repo (called from saveWish)
+        async function appendWishToRepo(wishData) {
+            // Works with OR without token:
+            // If admin token available: save to repo (permanent for all)
+            // If no token: save to localStorage only
+            const t = _ghToken;
+            if (!t) {
+                // Save locally only
+                let localWishes = [];
+                try { localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]'); } catch(e) {}
+                localWishes.unshift(wishData);
+                localStorage.setItem('nafas_local_wishes', JSON.stringify(localWishes));
+                return 'local';
+            }
+            // Read current wishes
+            let wishes = [];
+            try {
+                const data = await _readRepoFile(WISHES_PATH);
+                if (data && Array.isArray(data.wishes)) wishes = data.wishes;
+            } catch(e) {}
+            wishes.unshift(wishData);
+            await _writeRepoFile(WISHES_PATH, { wishes }, 'إضافة تهنئة جديدة 💌', t);
+            return 'cloud';
+        }
 
+        // ======== GITHUB TOKEN MODAL ========
+        function showGitHubTokenModal(purpose, onConfirm) {
+            const existing = document.getElementById('ghTokenModal');
+            if (existing) existing.remove();
             const modal = document.createElement('div');
-            modal.id = 'ghSaveModal';
-            modal.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;`;
+            modal.id = 'ghTokenModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
             modal.innerHTML = `
-                <div style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:1px solid #D4AF37;border-radius:20px;padding:30px;max-width:520px;width:100%;text-align:center;">
-                    <div style="font-size:1.8rem;margin-bottom:8px;">🔐 حفظ القائمة للجميع أونلاين</div>
-                    <p style="color:rgba(255,255,255,0.85);font-size:0.88rem;margin-bottom:18px;">لحفظ الأغاني بشكل دائم للجميع، تحتاج <strong>GitHub Token</strong> مرة واحدة فقط:</p>
-                    <div style="background:rgba(0,0,0,0.4);border-radius:12px;padding:15px;margin-bottom:18px;text-align:right;">
-                        <p style="color:#D4AF37;font-size:0.85rem;margin-bottom:8px;">📝 خطوات الحصول على Token (مرة واحدة فقط):</p>
-                        <ol style="color:rgba(255,255,255,0.8);font-size:0.8rem;padding-right:18px;line-height:1.9;">
-                            <li>افتح: <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#FFD700;">github.com/settings/tokens/new</a></li>
-                            <li>في <strong>Note</strong> اكتب: NafasMusic</li>
-                            <li>اختر <strong>repo</strong> من الصلاحيات</li>
-                            <li>اضغط <strong>Generate Token</strong> وانسخه هنا</li>
+                <div style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e);border:1px solid #D4AF37;border-radius:20px;padding:26px;max-width:500px;width:100%;text-align:center;font-family:Cairo,sans-serif;">
+                    <div style="font-size:1.6rem;margin-bottom:10px;">🔐 ${purpose}</div>
+                    <p style="color:rgba(255,255,255,0.8);font-size:0.83rem;margin-bottom:14px;">أدخل <strong style="color:#FFD700;">GitHub Token</strong> وسيُحفظ تلقائياً على جهازك.</p>
+                    <div style="background:rgba(0,0,0,0.4);border-radius:12px;padding:12px;margin-bottom:14px;text-align:right;">
+                        <p style="color:#D4AF37;font-size:0.8rem;margin-bottom:7px;">📋 كيفية الحصول على Token:</p>
+                        <ol style="color:rgba(255,255,255,0.75);font-size:0.76rem;padding-right:18px;line-height:1.9;margin:0;">
+                            <li>افتح: <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=NafasApp" target="_blank" style="color:#FFD700;">github.com/settings/tokens/new</a></li>
+                            <li>في <b>Note</b>: اكتب "NafasApp"، اختر <b>public_repo</b> ثم <b>Generate Token</b></li>
+                            <li>انسخ الـ Token والصقه هنا ↓</li>
                         </ol>
                     </div>
-                    <input id="ghTokenInput" type="password" placeholder="الصق GitHub Token هنا..." style="width:100%;padding:12px 15px;border-radius:30px;border:1px solid #D4AF37;background:rgba(0,0,0,0.5);color:#FFF;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;">
-                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-                        <button onclick="doSaveToGitHub()" style="background:linear-gradient(135deg,#D4AF37,#996515);color:#000;font-weight:700;padding:12px 24px;border-radius:30px;border:none;cursor:pointer;font-size:0.95rem;">💾 حفظ دائم للجميع</button>
-                        <button onclick="document.getElementById('ghSaveModal').style.display='none'" style="background:rgba(255,255,255,0.1);color:#FFF;padding:12px 20px;border-radius:30px;border:1px solid rgba(255,255,255,0.3);cursor:pointer;">إلغاء</button>
+                    <input id="ghTokenFieldInput" type="text" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;padding:11px 14px;border-radius:30px;border:1.5px solid #D4AF37;background:rgba(0,0,0,0.5);color:#FFF;font-size:0.85rem;margin-bottom:12px;box-sizing:border-box;direction:ltr;letter-spacing:1px;">
+                    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
+                        <button id="ghConfirmBtn" style="background:linear-gradient(135deg,#D4AF37,#996515);color:#000;font-weight:700;padding:10px 22px;border-radius:30px;border:none;cursor:pointer;font-size:0.9rem;">✅ تأكيد</button>
+                        <button onclick="document.getElementById('ghTokenModal').remove()" style="background:rgba(255,255,255,0.07);color:#FFF;padding:10px 18px;border-radius:30px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;">إلغاء</button>
                     </div>
-                    <div id="ghSaveStatus" style="margin-top:12px;font-size:0.85rem;"></div>
+                    <div id="ghTokenStatus" style="font-size:0.8rem;min-height:18px;"></div>
                 </div>
             `;
             document.body.appendChild(modal);
+            if (_ghToken) document.getElementById('ghTokenFieldInput').value = _ghToken;
+
+            document.getElementById('ghConfirmBtn').onclick = async function() {
+                const t = document.getElementById('ghTokenFieldInput').value.trim();
+                if (!t) { document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#FF5555;">⚠️ الرجاء إدخال الـ Token</span>'; return; }
+                _storeToken(t);
+                document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#FFD700;">⏳ جاري الحفظ...</span>';
+                try {
+                    await onConfirm(t);
+                    document.getElementById('ghTokenStatus').innerHTML = '<span style="color:#55FF88;">✅ تم بنجاح! سيظهر للجميع خلال دقيقة.</span>';
+                    setTimeout(() => { const m = document.getElementById('ghTokenModal'); if(m) m.remove(); }, 2500);
+                } catch(err) {
+                    document.getElementById('ghTokenStatus').innerHTML = `<span style="color:#FF5555;">❌ فشل: ${err.message.substring(0,120)}</span>`;
+                }
+            };
         }
 
-        async function doSaveToGitHub() {
-            const tokenInput = document.getElementById('ghTokenInput');
-            const statusEl = document.getElementById('ghSaveStatus');
-            const token = tokenInput ? tokenInput.value.trim() : '';
-            if (!token) { statusEl.innerHTML = '<span style="color:#FF5555;">⚠️ الرجاء إدخال GitHub Token</span>'; return; }
-            statusEl.innerHTML = '<span style="color:#FFD700;">⏳ جاري الحفظ في GitHub...</span>';
-            try {
-                const ok = await savePlaylistToGitHub(token);
-                if (ok) {
-                    statusEl.innerHTML = '<span style="color:#55FF88;">✅ تم الحفظ! ستظهر الأغاني للجميع خلال دقيقة.</span>';
-                    showToast('تمت إضافة الأغاني لجميع العائلة! 🎉');
-                    setTimeout(() => { document.getElementById('ghSaveModal').style.display = 'none'; }, 3000);
-                } else {
-                    statusEl.innerHTML = '<span style="color:#FF5555;">❌ فشل الحفظ - تأكد أن الـ Token صحيح وله صلاحية repo</span>';
-                }
-            } catch (e) {
-                statusEl.innerHTML = `<span style="color:#FF5555;">❌ خطأ: ${e.message}</span>`;
-            }
+        function showSaveToGitHubModal() {
+            showGitHubTokenModal('حفظ قائمة الأغاني للجميع', async (token) => {
+                const ok = await _writeRepoFile(PLAYLIST_PATH, { tracks: playlistQueue }, 'تحديث قائمة أغاني نَفَس 🎵', token);
+                if (!ok) throw new Error('فشل الحفظ في GitHub');
+                showToast('تم حفظ قائمة الأغاني للجميع! 🎉');
+            });
         }
 
         function addYouTubeToPlaylist() {
             const input = document.getElementById('ytUrlInput');
-            if (!input || !input.value.trim()) {
-                showToast('الرجاء لصق رابط الأغنية أولاً ⚠️');
-                return;
-            }
+            if (!input || !input.value.trim()) { showToast('الرجاء لصق رابط الأغنية ⚠️'); return; }
             const videoId = extractYouTubeId(input.value.trim());
-            if (!videoId) {
-                showToast('رابط يوتيوب غير صحيح ❌');
-                return;
-            }
-
-            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
+            if (!videoId) { showToast('رابط يوتيوب غير صحيح ❌'); return; }
+            const trackTitle = `أغنية ${playlistQueue.length + 1} 🎵`;
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
             saveLocalPlaylist();
             input.value = '';
             updatePlaylistUI();
-            showToast('تمت الإضافة! 🎶 اضغط "حفظ للجميع" لتثبيتها دائماً');
-
-            if (playlistQueue.length === 1 && !audioIsPlaying) {
-                playTrackAtIndex(0);
-            }
+            showToast('تمت الإضافة 🎶 — اضغط "حفظ للجميع" لتثبيتها');
+            if (playlistQueue.length === 1 && !audioIsPlaying) playTrackAtIndex(0);
         }
 
         function playYouTubeFromInput() {
             const input = document.getElementById('ytUrlInput');
-            if (!input || !input.value.trim()) {
-                showToast('الرجاء لصق رابط الأغنية أولاً ⚠️');
-                return;
-            }
+            if (!input || !input.value.trim()) { showToast('الرجاء لصق رابط الأغنية ⚠️'); return; }
             const videoId = extractYouTubeId(input.value.trim());
-            if (!videoId) {
-                showToast('رابط يوتيوب غير صحيح ❌');
-                return;
-            }
-            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
+            if (!videoId) { showToast('رابط يوتيوب غير صحيح ❌'); return; }
+            const trackTitle = `أغنية ${playlistQueue.length + 1} 🎵`;
             const track = { type: 'yt', id: videoId, title: trackTitle };
             playlistQueue.push(track);
             saveLocalPlaylist();
@@ -1571,58 +1607,47 @@
             if (playlistQueue.length === 0) return;
             currentPlaylistIndex = (index + playlistQueue.length) % playlistQueue.length;
             const track = playlistQueue[currentPlaylistIndex];
-
             if (track.type === 'yt') {
                 if (ytPlayer && ytPlayer.loadVideoById) {
                     ytPlayer.loadVideoById(track.id);
                     ytPlayer.playVideo();
-                    isYouTubeAudio = true;
-                    audioIsPlaying = true;
-                    showToast(`جاري تشغيل: ${track.title} 🎶`);
+                    isYouTubeAudio = true; audioIsPlaying = true;
+                    const statusEl = document.getElementById('audioStatusText');
+                    if (statusEl) statusEl.innerText = track.title;
+                    const btn = document.querySelector('#mainAudioBtn i');
+                    if (btn) btn.className = 'fa-brands fa-youtube';
+                    showToast('▶️ ' + track.title);
                 }
             } else if (track.type === 'mp3') {
-                const audioPlayer = document.getElementById('bgMusic');
-                audioPlayer.src = track.src;
-                audioPlayer.play();
-                audioIsPlaying = true;
-                isYouTubeAudio = false;
-                showToast(`جاري تشغيل: ${track.title} 🎶`);
+                const ap = document.getElementById('bgMusic');
+                if (ap) { ap.src = track.src; ap.play(); }
+                audioIsPlaying = true; isYouTubeAudio = false;
+                showToast('▶️ ' + track.title);
             }
             updatePlaylistUI();
         }
 
-        function playNextTrack() {
-            if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex + 1);
-        }
-
-        function playPrevTrack() {
-            if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex - 1);
-        }
+        function playNextTrack() { if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex + 1); }
+        function playPrevTrack() { if (playlistQueue.length > 0) playTrackAtIndex(currentPlaylistIndex - 1); }
 
         function removeTrackFromPlaylist(index) {
             playlistQueue.splice(index, 1);
-            if (currentPlaylistIndex >= playlistQueue.length) {
-                currentPlaylistIndex = Math.max(0, playlistQueue.length - 1);
-            }
+            if (currentPlaylistIndex >= playlistQueue.length) currentPlaylistIndex = Math.max(0, playlistQueue.length - 1);
             saveLocalPlaylist();
             updatePlaylistUI();
         }
 
         function updatePlaylistUI() {
-            const listContainer = document.getElementById('playlistItemsList');
-            if (!listContainer) return;
-
+            const el = document.getElementById('playlistItemsList');
+            if (!el) return;
             if (playlistQueue.length === 0) {
-                listContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size:0.85rem; text-align:center; padding:5px;">القائمة فارغة — أضف روابط يوتيوب واضغط "حفظ للجميع" لتعمل لدى كل العائلة.</div>`;
+                el.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.83rem;text-align:center;padding:8px;">القائمة فارغة — أضف روابط يوتيوب واضغط "حفظ للجميع"</div>';
                 return;
             }
-
-            listContainer.innerHTML = playlistQueue.map((track, i) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background: ${i === currentPlaylistIndex ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.06)'}; padding: 6px 12px; border-radius: 8px; border: 1px solid ${i === currentPlaylistIndex ? 'var(--gold-primary)' : 'transparent'}; font-size:0.9rem; margin-bottom:4px;">
-                    <span style="color:${i === currentPlaylistIndex ? 'var(--gold-light)' : '#FFF'}; cursor:pointer;" onclick="playTrackAtIndex(${i})">
-                        ${i === currentPlaylistIndex ? '▶️ ' : ''}${i + 1}. ${escapeHtml(track.title)}
-                    </span>
-                    <button onclick="removeTrackFromPlaylist(${i})" style="background:none; border:none; color:#FF5555; cursor:pointer;"><i class="fa-solid fa-trash-can"></i></button>
+            el.innerHTML = playlistQueue.map((t, i) => `
+                <div style="display:flex;justify-content:space-between;align-items:center;background:${i===currentPlaylistIndex?'rgba(212,175,55,0.2)':'rgba(255,255,255,0.05)'};padding:7px 12px;border-radius:9px;border:1px solid ${i===currentPlaylistIndex?'#D4AF37':'transparent'};margin-bottom:4px;">
+                    <span style="color:${i===currentPlaylistIndex?'#F9F295':'#EEE'};cursor:pointer;font-size:0.87rem;" onclick="playTrackAtIndex(${i})">${i===currentPlaylistIndex?'▶️ ':''}${i+1}. ${escapeHtml(t.title)}</span>
+                    <button onclick="removeTrackFromPlaylist(${i})" style="background:none;border:none;color:#FF5555;cursor:pointer;padding:2px 6px;">🗑</button>
                 </div>
             `).join('');
         }
@@ -1630,14 +1655,13 @@
         function extractYouTubeId(url) {
             if (!url) return '';
             url = url.trim();
-            const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            if (match && match[1] && match[1].length === 11) return match[1];
+            const m = url.match(/^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]{11})/);
+            if (m && m[1]) return m[1];
             if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
             return '';
         }
 
-        /* Local File Picker Loaders for instant live preview */
+        /* Local File Picker        /* Local File Picker Loaders for instant live preview */
         function loadUserPhotos(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
@@ -1797,66 +1821,92 @@
             }
         }
 
-        /* Cloud Wishes Database Engine (Free Live Realtime Backend) */
-        const CLOUD_WISHES_URL = "https://nafas-birthday-wishes-default-rtdb.firebaseio.com/wishes";
+        /* =====================================================
+           WISHES ENGINE v2.0 — localStorage + GitHub Repo
+           ===================================================== */
 
-        async function fetchCloudWishes() {
+        // Load wishes: first from localStorage, then from repo
+        async function fetchWishesFromRepo() {
+            // Load from localStorage first
             try {
-                const res = await fetch(`${CLOUD_WISHES_URL}.json`);
+                const localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
+                if (localWishes.length > 0) {
+                    const grid = document.getElementById('wishesGrid');
+                    if (grid) {
+                        grid.innerHTML = '';
+                        localWishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة', w.timestamp, false));
+                    }
+                }
+            } catch(e) {}
+
+            // Then fetch from GitHub repo (if wishes.json exists)
+            try {
+                const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/wishes.json?t=${Date.now()}`;
+                const res = await fetch(url);
                 if (!res.ok) return;
                 const data = await res.json();
-                if (!data) return;
-
+                if (!data || !Array.isArray(data.wishes) || data.wishes.length === 0) return;
                 const grid = document.getElementById('wishesGrid');
-                grid.innerHTML = ''; // Clear samples to show real family cloud wishes
-
-                const wishes = Object.keys(data).map(key => ({ id: key, ...data[key] }))
-                    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                wishes.forEach(item => {
-                    renderWishCard(item.author, item.text, item.rel || 'تهنئة عائلية غالية', item.timestamp, false);
-                });
-            } catch (err) {
-                console.log('Using local fallback for wishes');
+                if (!grid) return;
+                grid.innerHTML = '';
+                data.wishes.forEach(w => renderWishCard(w.author, w.text, w.rel || 'تهنئة عائلية', w.timestamp, false));
+                // Also save to localStorage for offline use
+                localStorage.setItem('nafas_local_wishes', JSON.stringify(data.wishes));
+            } catch(err) {
+                // Keep what we already showed
             }
         }
+        fetchWishesFromRepo();
 
         async function saveWish(e) {
             e.preventDefault();
             const authorInput = document.getElementById('wishAuthor');
-            const textInput = document.getElementById('wishText');
-            const author = authorInput.value.trim();
-            const text = textInput.value.trim();
+            const textInput   = document.getElementById('wishText');
+            const relInput    = document.getElementById('wishRel');
+            const author = authorInput ? authorInput.value.trim() : '';
+            const text   = textInput ? textInput.value.trim() : '';
+            const rel    = (relInput ? relInput.value.trim() : '') || 'تهنئة عائلية';
 
-            if (!author || !text) return;
+            if (!author || !text) {
+                showToast('الرجاء كتابة اسمك والتهنئة ⚠️');
+                return;
+            }
 
             const timestamp = Date.now();
-            const wishData = {
-                author: author,
-                text: text,
-                rel: 'تهنئة عائلية غالية',
-                timestamp: timestamp
-            };
+            const wishData = { author, text, rel, timestamp };
 
-            // Render card immediately for instant feedback
-            renderWishCard(author, text, 'تهنئة حديثة 💖', timestamp, true);
-            document.getElementById('wishForm').reset();
+            // Show it immediately
+            renderWishCard(author, text, rel, timestamp, true);
+            if (document.getElementById('wishForm')) document.getElementById('wishForm').reset();
             triggerConfetti();
-            showToast('تم حفظ تهنئتك السحابية لـ نَفَس بنجاح! 💌');
+            showToast('تم حفظ تهنئتك! 💌');
 
-            // Send to cloud database permanently so everyone online sees it!
+            // Save to localStorage
             try {
-                await fetch(`${CLOUD_WISHES_URL}.json`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(wishData)
-                });
-            } catch (err) {
-                console.error('Cloud save error', err);
+                const localWishes = JSON.parse(localStorage.getItem('nafas_local_wishes') || '[]');
+                localWishes.unshift(wishData);
+                localStorage.setItem('nafas_local_wishes', JSON.stringify(localWishes));
+            } catch(e) {}
+
+            // If admin token available: save permanently to GitHub repo
+            if (_ghToken) {
+                try {
+                    let wishes = [];
+                    try {
+                        const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/wishes.json?t=${Date.now()}`;
+                        const r = await fetch(url);
+                        if (r.ok) { const d = await r.json(); if (Array.isArray(d.wishes)) wishes = d.wishes; }
+                    } catch(e) {}
+                    wishes.unshift(wishData);
+                    await _writeRepoFile(WISHES_PATH, { wishes }, 'إضافة تهنئة 💌', _ghToken);
+                    showToast('✅ تم حفظ تهنئتك للجميع!');
+                } catch(err) {
+                    console.log('Wish saved locally only:', err.message);
+                }
             }
         }
 
-        function renderWishCard(author, text, rel, timestamp, prepend = true) {
+                function renderWishCard(author, text, rel, timestamp, prepend = true) {
             const grid = document.getElementById('wishesGrid');
             const card = document.createElement('div');
             card.className = 'wish-item-card scroll-reveal revealed';
