@@ -1373,13 +1373,23 @@
                 height: '0',
                 width: '0',
                 videoId: '',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 0 },
+                host: 'https://www.youtube-nocookie.com',
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'loop': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'iv_load_policy': 3,
+                    'disablekb': 1,
+                    'origin': window.location.origin
+                },
                 events: {
                     'onStateChange': function (e) {
                         if (e.data === YT.PlayerState.PLAYING) {
                             audioIsPlaying = true;
                             const currentTrack = playlistQueue[currentPlaylistIndex];
-                            const title = currentTrack ? currentTrack.title : 'صوت يوتيوب 🎵';
+                            const title = currentTrack ? currentTrack.title : 'صوت بدون إعلانات 🎵';
                             document.getElementById('audioStatusText').innerText = title;
                             document.querySelector('#mainAudioBtn i').className = 'fa-brands fa-youtube';
                         } else if (e.data === YT.PlayerState.ENDED) {
