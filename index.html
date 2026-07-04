@@ -1066,8 +1066,8 @@
             </div>
         </div>
 
-        <!-- Section: Custom YouTube Music & Audio Player with Sequential Playlist -->
-        <div class="youtube-music-section scroll-reveal">
+        <!-- Section: Custom YouTube Music & Audio Player with Sequential Playlist (Admin/Edit Only) -->
+        <div class="youtube-music-section scroll-reveal" id="adminEditSection" style="display: none !important;">
             <div class="music-box-card">
                 <div class="music-box-title">
                     <i class="fa-brands fa-youtube" style="color:#FF0000; font-size:1.6rem;"></i>
@@ -1394,7 +1394,7 @@
 
         // Show YouTube music & playlist edit controls ONLY if ?edit=1 or ?admin=1 is in URL
         if (window.location.search.includes('edit') || window.location.search.includes('admin')) {
-            const ytSection = document.querySelector('.youtube-music-section');
+            const ytSection = document.getElementById('adminEditSection') || document.querySelector('.youtube-music-section');
             if (ytSection) ytSection.style.setProperty('display', 'block', 'important');
         }
 
