@@ -1373,7 +1373,13 @@
 
         /* Fallback Image Generator SVG if image file not present yet */
         function handleImageError(img, num) {
-            // Create a gorgeous SVG placeholder with princess crown & name
+            if (img.dataset.failed) return;
+            if (img.src.endsWith('.jpg')) {
+                img.dataset.failed = "jpeg_attempted";
+                img.src = `images/nafas${num}.jpeg`;
+                return;
+            }
+            img.dataset.failed = "true";
             const svg = `
             <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
                 <defs>
