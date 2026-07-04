@@ -1045,27 +1045,42 @@
             </div>
         </div>
 
-        <!-- Section: Custom YouTube Music & Audio Player -->
+        <!-- Section: Custom YouTube Music & Audio Player with Sequential Playlist -->
         <div class="youtube-music-section scroll-reveal">
             <div class="music-box-card">
                 <div class="music-box-title">
                     <i class="fa-brands fa-youtube" style="color:#FF0000; font-size:1.6rem;"></i>
-                    <span>تشغيل أغنية عيد الميلاد من يوتيوب 🎵</span>
+                    <span>مشغل قائمة أغاني يوتيوب المتتابعة 🎵</span>
                 </div>
-                <p class="music-box-subtitle">ضع رابط أي فيديو أو أغنية من يوتيوب هنا وسيتم تشغيل الصوت مباشرة في خلفية الموقع!</p>
+                <p class="music-box-subtitle">ضع رابط أغنية يوتيوب واضغط "تشغيل" أو "إضافة للقائمة" لتعمل الأغاني متتالية أوتوماتيكياً واحدة تلو الأخرى!</p>
                 
                 <div class="yt-input-row">
-                    <input type="text" id="ytUrlInput" class="form-input yt-input" placeholder="ضع رابط أغنية يوتيوب هنا (مثال: https://youtu.be/... أو https://www.youtube.com/watch?v=...)">
+                    <input type="text" id="ytUrlInput" class="form-input yt-input" placeholder="ضع رابط أغنية يوتيوب هنا (مثال: https://youtu.be/...)">
                     <button type="button" onclick="playYouTubeFromInput()" class="btn-yt-play">
-                        <i class="fa-brands fa-youtube"></i> تشغيل الصوت 🎵
+                        <i class="fa-brands fa-youtube"></i> تشغيل الآن 🎵
+                    </button>
+                    <button type="button" onclick="addYouTubeToPlaylist()" class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; font-weight:700;">
+                        <i class="fa-solid fa-plus"></i> إضافة للقائمة ➕
                     </button>
                 </div>
 
+                <!-- Visual Playlist Queue Display -->
+                <div class="playlist-container" id="playlistQueueBox" style="margin: 20px auto 10px; max-width: 600px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 14px; border: 1px solid rgba(212,175,55,0.2);">
+                    <div class="playlist-header" style="font-size: 0.95rem; color: var(--gold-light); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span><i class="fa-solid fa-list-ol"></i> قائمة التتابع الأوتوماتيكي للأغاني:</span>
+                        <div style="display:flex; gap:5px;">
+                            <button onclick="playPrevTrack()" class="control-btn" title="الأغنية السابقة"><i class="fa-solid fa-backward-step"></i></button>
+                            <button onclick="playNextTrack()" class="control-btn" title="الأغنية التالية"><i class="fa-solid fa-forward-step"></i></button>
+                        </div>
+                    </div>
+                    <div id="playlistItemsList" style="display: flex; flex-direction: column; gap: 8px; text-align: right;"></div>
+                </div>
+
                 <div class="custom-audio-file-row">
-                    <span>أو اختر ملف أغنية (MP3) من جهازك:</span>
-                    <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000;">
+                    <span>أو اختر ملفات أغاني MP3 من جهازك:</span>
+                    <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--rose-gold), var(--gold-dark)); color:#FFF;">
                         <i class="fa-solid fa-file-audio"></i> اختر ملف MP3
-                        <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
+                        <input type="file" id="localAudioPicker" accept="audio/*" multiple style="display:none" onchange="loadUserAudio(event)">
                     </label>
                     <label class="btn-custom-upload" style="background: rgba(255,255,255,0.1); color:#FFF; margin-right:5px;">
                         <i class="fa-solid fa-images"></i> اختيار الصور محلياً
@@ -1332,6 +1347,10 @@
             img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
         }
 
+        /* Playlist Queue Manager for Continuous Sequential Playback */
+        let playlistQueue = [];
+        let currentPlaylistIndex = 0;
+
         /* YouTube Audio Player Integration */
         let ytPlayer = null;
         let isYouTubeAudio = false;
@@ -1347,17 +1366,42 @@
                 height: '0',
                 width: '0',
                 videoId: '',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1 },
+                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 0 },
                 events: {
                     'onStateChange': function (e) {
                         if (e.data === YT.PlayerState.PLAYING) {
                             audioIsPlaying = true;
-                            document.getElementById('audioStatusText').innerText = 'صوت يوتيوب 🎵';
+                            const currentTrack = playlistQueue[currentPlaylistIndex];
+                            const title = currentTrack ? currentTrack.title : 'صوت يوتيوب 🎵';
+                            document.getElementById('audioStatusText').innerText = title;
                             document.querySelector('#mainAudioBtn i').className = 'fa-brands fa-youtube';
+                        } else if (e.data === YT.PlayerState.ENDED) {
+                            // AUTOMATICALLY PLAY NEXT TRACK WHEN CURRENT FINISHES!
+                            playNextTrack();
                         }
                     }
                 }
             });
+        }
+
+        function addYouTubeToPlaylist() {
+            const input = document.getElementById('ytUrlInput');
+            if (!input || !input.value.trim()) return;
+            const videoId = extractYouTubeId(input.value.trim());
+            if (!videoId) {
+                showToast('رابط يوتيوب غير صحيح ❌');
+                return;
+            }
+
+            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
+            playlistQueue.push({ type: 'yt', id: videoId, title: trackTitle });
+            input.value = '';
+            updatePlaylistUI();
+            showToast('تمت إضافة الأغنية للقائمة المتتابعة! ➕🎶');
+
+            if (playlistQueue.length === 1 && !audioIsPlaying) {
+                playTrackAtIndex(0);
+            }
         }
 
         function playYouTubeFromInput() {
@@ -1368,15 +1412,76 @@
                 showToast('رابط يوتيوب غير صحيح ❌');
                 return;
             }
-            if (ytPlayer && ytPlayer.loadVideoById) {
-                ytPlayer.loadVideoById(videoId);
-                ytPlayer.playVideo();
-                isYouTubeAudio = true;
+
+            const trackTitle = `أغنية يوتيوب ${playlistQueue.length + 1} 🎵`;
+            playlistQueue.push({ type: 'yt', id: videoId, title: trackTitle });
+            currentPlaylistIndex = playlistQueue.length - 1;
+            input.value = '';
+            updatePlaylistUI();
+            playTrackAtIndex(currentPlaylistIndex);
+        }
+
+        function playTrackAtIndex(index) {
+            if (playlistQueue.length === 0) return;
+            currentPlaylistIndex = (index + playlistQueue.length) % playlistQueue.length;
+            const track = playlistQueue[currentPlaylistIndex];
+
+            if (track.type === 'yt') {
+                if (ytPlayer && ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById(track.id);
+                    ytPlayer.playVideo();
+                    isYouTubeAudio = true;
+                    audioIsPlaying = true;
+                    showToast(`جاري تشغيل: ${track.title} 🎶`);
+                }
+            } else if (track.type === 'mp3') {
+                const audioPlayer = document.getElementById('bgMusic');
+                audioPlayer.src = track.src;
+                audioPlayer.play();
                 audioIsPlaying = true;
-                showToast('جاري تشغيل صوت الأغنية من يوتيوب! 🎶');
-            } else {
-                showToast('جاري تحضير المشغل، اضغط مرة أخرى بعد قليل');
+                isYouTubeAudio = false;
+                showToast(`جاري تشغيل: ${track.title} 🎶`);
             }
+            updatePlaylistUI();
+        }
+
+        function playNextTrack() {
+            if (playlistQueue.length > 0) {
+                playTrackAtIndex(currentPlaylistIndex + 1);
+            }
+        }
+
+        function playPrevTrack() {
+            if (playlistQueue.length > 0) {
+                playTrackAtIndex(currentPlaylistIndex - 1);
+            }
+        }
+
+        function removeTrackFromPlaylist(index) {
+            playlistQueue.splice(index, 1);
+            if (currentPlaylistIndex >= playlistQueue.length) {
+                currentPlaylistIndex = Math.max(0, playlistQueue.length - 1);
+            }
+            updatePlaylistUI();
+        }
+
+        function updatePlaylistUI() {
+            const listContainer = document.getElementById('playlistItemsList');
+            if (!listContainer) return;
+
+            if (playlistQueue.length === 0) {
+                listContainer.innerHTML = `<div style="color: rgba(255,255,255,0.5); font-size:0.85rem; text-align:center; padding:5px;">القائمة فارغة، ضَع روابط يوتيوب واضغط "إضافة للقائمة" لتعمل متتالية أوتوماتيكياً.</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = playlistQueue.map((track, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background: ${i === currentPlaylistIndex ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.06)'}; padding: 6px 12px; border-radius: 8px; border: 1px solid ${i === currentPlaylistIndex ? 'var(--gold-primary)' : 'transparent'}; font-size:0.9rem;">
+                    <span style="color:${i === currentPlaylistIndex ? 'var(--gold-light)' : '#FFF'}; font-weight:${i === currentPlaylistIndex ? 'bold' : 'normal'}; cursor:pointer;" onclick="playTrackAtIndex(${i})">
+                        ${i === currentPlaylistIndex ? '▶️ ' : ''}${i + 1}. ${escapeHtml(track.title)}
+                    </span>
+                    <button onclick="removeTrackFromPlaylist(${i})" style="background:none; border:none; color:#FF5555; cursor:pointer;" title="حذف الأغنية"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `).join('');
         }
 
         function extractYouTubeId(url) {
@@ -1403,17 +1508,26 @@
         }
 
         function loadUserAudio(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const audioPlayer = document.getElementById('bgMusic');
-            audioPlayer.src = URL.createObjectURL(file);
-            audioPlayer.play();
-            audioIsPlaying = true;
-            isYouTubeAudio = false;
-            document.getElementById('audioStatusText').innerText = 'تشغيل أغنيتك الخاصة 🎵';
-            document.querySelector('#mainAudioBtn i').className = 'fa-solid fa-pause';
-            showToast('جاري تشغيل الأغنية المحددة! 🎶');
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const src = URL.createObjectURL(file);
+                const title = file.name.replace(/\.[^/.]+$/, "");
+                playlistQueue.push({ type: 'mp3', src: src, title: title });
+            }
+            updatePlaylistUI();
+            if (!audioIsPlaying) {
+                playTrackAtIndex(playlistQueue.length - files.length);
+            }
+            showToast('تمت إضافة الأغاني المحددة للقائمة المتتابعة! 🎶');
         }
+
+        // Auto play next track when local MP3 audio finishes!
+        document.getElementById('bgMusic').addEventListener('ended', function() {
+            playNextTrack();
+        });
 
         /* Web Audio API Synthesizer Fallback for Happy Birthday */
         let audioCtx = null;
