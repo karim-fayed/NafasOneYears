@@ -1676,43 +1676,37 @@
             const btnIcon = document.querySelector('#mainAudioBtn i');
             const statusText = document.getElementById('audioStatusText');
 
-            if (isYouTubeAudio && ytPlayer) {
-                try {
-                    const state = ytPlayer.getPlayerState();
-                    if (state === YT.PlayerState.PLAYING) {
-                        ytPlayer.pauseVideo();
-                        audioIsPlaying = false;
-                        btnIcon.className = 'fa-solid fa-music';
-                        statusText.innerText = 'إيقاف الموسيقى 🔇';
-                    } else {
-                        ytPlayer.playVideo();
-                        audioIsPlaying = true;
-                        btnIcon.className = 'fa-brands fa-youtube';
-                        statusText.innerText = 'صوت يوتيوب 🎵';
-                    }
-                } catch (e) { }
-                return;
-            }
-
-            if (!audioIsPlaying) {
-                // Try playing HTML5 audio first
-                bgMusic.play().then(() => {
-                    audioIsPlaying = true;
-                    btnIcon.className = 'fa-solid fa-pause';
-                    statusText.innerText = 'تشغيل الموسيقى 🎶';
-                }).catch(() => {
-                    // Fallback to Web Audio Synth
-                    playSynthesizedBirthdaySong();
-                    audioIsPlaying = true;
-                    btnIcon.className = 'fa-solid fa-music';
-                    statusText.innerText = 'عزف لحن عيد الميلاد 🎵';
-                });
-            } else {
-                bgMusic.pause();
+            if (audioIsPlaying) {
+                // Currently playing -> Pause it!
+                if (isYouTubeAudio && ytPlayer && ytPlayer.pauseVideo) {
+                    try { ytPlayer.pauseVideo(); } catch (e) { }
+                } else if (bgMusic) {
+                    bgMusic.pause();
+                }
                 audioIsPlaying = false;
                 btnIcon.className = 'fa-solid fa-music';
                 statusText.innerText = 'إيقاف الموسيقى 🔇';
+                return;
             }
+
+            // Currently stopped -> Play!
+            // 1. If playlistQueue has tracks (e.g. cloud YouTube songs), play the current track!
+            if (playlistQueue && playlistQueue.length > 0) {
+                playTrackAtIndex(currentPlaylistIndex);
+                return;
+            }
+
+            // 2. Fallback to HTML5 audio or Web Audio Synthesizer
+            bgMusic.play().then(() => {
+                audioIsPlaying = true;
+                btnIcon.className = 'fa-solid fa-pause';
+                statusText.innerText = 'تشغيل الموسيقى 🎶';
+            }).catch(() => {
+                playSynthesizedBirthdaySong();
+                audioIsPlaying = true;
+                btnIcon.className = 'fa-solid fa-music';
+                statusText.innerText = 'عزف لحن عيد الميلاد 🎵';
+            });
         }
 
         // Auto start audio on user first interaction
