@@ -1929,8 +1929,8 @@
             }
         }
 
-        // Fetch cloud wishes live on page load!
-        fetchCloudWishes();
+        // Fetch wishes from GitHub repo on page load
+        fetchWishesFromRepo();
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
