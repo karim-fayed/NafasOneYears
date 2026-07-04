@@ -1,3 +1,14 @@
 {
-  "tracks": []
+  "tracks": [
+    {
+      "type": "yt",
+      "id": "SyJ695H18Cw",
+      "title": "أغنية يوتيوب 1 🎵"
+    },
+    {
+      "type": "yt",
+      "id": "P1X9uKvfRmg",
+      "title": "أغنية يوتيوب 2 🎵"
+    }
+  ]
 }
