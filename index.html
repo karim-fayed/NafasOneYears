@@ -1226,7 +1226,7 @@
         let isPlaying = true;
         let slideInterval = null;
         let progressInterval = null;
-        const duration = 12000; // 12 seconds per slide (5 extra seconds added!)
+        const duration = 22000; // 22 seconds per slide (+10 extra seconds added!)
         let startTime = Date.now();
         let confettiTimeout = null;
         let subSlideTimeout = null;
@@ -1301,7 +1301,7 @@
                     if (photo1) photo1.style.opacity = '1';
                     if (photo2) {
                         photo2.style.opacity = '0';
-                        // Switch to 2nd photo at 6 seconds (halfway through 12s)
+                        // Switch to 2nd photo at 11 seconds (halfway through 22s)
                         subSlideTimeout = setTimeout(() => {
                             if (isPlaying && slide.classList.contains('active')) {
                                 photo1.style.transition = 'opacity 1.5s ease';
@@ -1309,7 +1309,7 @@
                                 photo1.style.opacity = '0';
                                 photo2.style.opacity = '1';
                             }
-                        }, 6000);
+                        }, 11000);
                     }
                 }
             });
