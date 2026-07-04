@@ -1238,9 +1238,10 @@
         let isPlaying = true;
         let slideInterval = null;
         let progressInterval = null;
-        const duration = 7000; // 7 seconds per photo
+        const duration = 12000; // 12 seconds per slide (5 extra seconds added!)
         let startTime = Date.now();
         let confettiTimeout = null;
+        let subSlideTimeout = null;
 
         const uploader = document.querySelector('.upload-helper-box');
         if (uploader) uploader.style.display = 'block';
@@ -1300,22 +1301,37 @@
         }
         animateParticles();
 
-        /* Slideshow Engine with Ken Burns Zoom & Progress Bar */
+        /* Slideshow Engine with Ken Burns Zoom & Dual-Photo Support */
         function showSlide(index) {
+            if (subSlideTimeout) clearTimeout(subSlideTimeout);
             slides.forEach((slide, i) => {
                 slide.classList.remove('active');
                 if (i === index) {
                     slide.classList.add('active');
+                    const photo1 = slide.querySelector('.main-slide-img');
+                    const photo2 = slide.querySelector('.main-slide-img-2');
+                    if (photo1) photo1.style.opacity = '1';
+                    if (photo2) {
+                        photo2.style.opacity = '0';
+                        // Switch to 2nd photo at 6 seconds (halfway through 12s)
+                        subSlideTimeout = setTimeout(() => {
+                            if (isPlaying && slide.classList.contains('active')) {
+                                photo1.style.transition = 'opacity 1.5s ease';
+                                photo2.style.transition = 'opacity 1.5s ease';
+                                photo1.style.opacity = '0';
+                                photo2.style.opacity = '1';
+                            }
+                        }, 6000);
+                    }
                 }
             });
             currentIndex = index;
             resetProgress();
 
-            // Automatically trigger celebratory confetti burst 2 seconds into each photo!
             if (confettiTimeout) clearTimeout(confettiTimeout);
             confettiTimeout = setTimeout(() => {
                 if (isPlaying) triggerConfetti();
-            }, 2000);
+            }, 2500);
         }
 
         function nextSlide() {
@@ -1713,20 +1729,43 @@
             return '';
         }
 
-        /* Local File Picker        /* Local File Picker Loaders for instant live preview */
+        /* Local File Picker Loaders for instant live preview */
         function loadUserPhotos(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            for (let i = 0; i < Math.min(files.length, totalSlides); i++) {
+            for (let f = 0; f < files.length; f++) {
+                const slideIdx = Math.floor(f / 2);
+                if (slideIdx >= totalSlides) break;
+                const isSecond = (f % 2 === 1);
+
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    const imgs = slides[i].querySelectorAll('img');
-                    imgs.forEach(img => img.src = e.target.result);
-                };
-                reader.readAsDataURL(files[i]);
+                reader.onload = (function (sIdx, second) {
+                    return function (e) {
+                        const targetSlide = slides[sIdx];
+                        if (!targetSlide) return;
+                        if (!second) {
+                            // Photo 1 for this slide
+                            const imgs = targetSlide.querySelectorAll('.main-slide-img, .bg-blur-img');
+                            imgs.forEach(img => img.src = e.target.result);
+                        } else {
+                            // Photo 2 for this slide!
+                            let p2 = targetSlide.querySelector('.main-slide-img-2');
+                            if (!p2) {
+                                p2 = document.createElement('img');
+                                p2.className = 'main-slide-img-2';
+                                p2.style.cssText = 'position:absolute;z-index:3;max-width:96%;max-height:96%;width:auto;height:auto;object-fit:contain;opacity:0;border-radius:12px;filter:drop-shadow(0 15px 35px rgba(0,0,0,0.85));';
+                                const overlay = targetSlide.querySelector('.slide-overlay');
+                                if (overlay) targetSlide.insertBefore(p2, overlay);
+                                else targetSlide.appendChild(p2);
+                            }
+                            p2.src = e.target.result;
+                        }
+                    };
+                })(slideIdx, isSecond);
+                reader.readAsDataURL(files[f]);
             }
-            showToast('تم تحميل الصور المحددة بنجاح! 🎉');
+            showToast('تم تحميل الصور المحددة بنجاح (صورتين لكل شريحة)! 🎉');
             triggerConfetti();
         }
 
