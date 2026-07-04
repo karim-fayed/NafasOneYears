@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عام من النور | عيد الميلاد الأول للغالية نَفَس 👑</title>
-    
+
     <!-- SEO & Social Meta Tags -->
     <meta name="description" content="احتفال بعيد الميلاد الأول للأميرة نَفَس - عام كامل من الحب والبهجة والنور">
     <meta property="og:title" content="عام من النور | عيد الميلاد الأول لـ نَفَس 👑">
@@ -14,11 +15,13 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -141,8 +144,15 @@
         }
 
         @keyframes floatCrown {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(3deg); }
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(3deg);
+            }
         }
 
         .main-title {
@@ -180,7 +190,10 @@
         .poetic-card::before {
             content: '';
             position: absolute;
-            top: 0; right: 0; width: 100%; height: 3px;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 3px;
             background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
         }
 
@@ -244,12 +257,31 @@
         }
 
         @media (max-width: 768px) {
-            .cinematic-container { height: 420px; }
-            .main-title { font-size: 3.2rem; }
-            .poetic-text { font-size: 1.25rem; line-height: 1.9; }
-            .slide-caption-box { bottom: 75px; padding: 10px 14px; }
-            .slide-caption-title { font-size: 1.55rem; }
-            .slide-caption-desc { font-size: 0.92rem; }
+            .cinematic-container {
+                height: 420px;
+            }
+
+            .main-title {
+                font-size: 3.2rem;
+            }
+
+            .poetic-text {
+                font-size: 1.25rem;
+                line-height: 1.9;
+            }
+
+            .slide-caption-box {
+                bottom: 75px;
+                padding: 10px 14px;
+            }
+
+            .slide-caption-title {
+                font-size: 1.55rem;
+            }
+
+            .slide-caption-desc {
+                font-size: 0.92rem;
+            }
         }
 
         .slide-item {
@@ -304,7 +336,7 @@
         .slide-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0.95) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.85) 80%, rgba(0, 0, 0, 0.95) 100%);
             z-index: 3;
             pointer-events: none;
         }
@@ -338,7 +370,7 @@
             font-family: var(--font-display);
             font-size: clamp(1.8rem, 4.5vw, 2.5rem);
             color: var(--gold-light);
-            text-shadow: 0 4px 18px rgba(0,0,0,1), 0 0 12px rgba(212, 175, 55, 0.5);
+            text-shadow: 0 4px 18px rgba(0, 0, 0, 1), 0 0 12px rgba(212, 175, 55, 0.5);
             margin-bottom: 4px;
             letter-spacing: 0.5px;
         }
@@ -346,7 +378,7 @@
         .slide-caption-desc {
             font-size: clamp(0.95rem, 2.8vw, 1.18rem);
             color: #FFFFFF;
-            text-shadow: 0 3px 14px rgba(0,0,0,1);
+            text-shadow: 0 3px 14px rgba(0, 0, 0, 1);
             font-weight: 400;
         }
 
@@ -386,7 +418,7 @@
         .progress-bar-wrap {
             flex: 1;
             height: 4px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             margin: 0 15px;
             overflow: hidden;
@@ -399,9 +431,8 @@
             transition: width 0.1s linear;
         }
 
-        /* Custom Local Image Uploader Helper (Hidden from Public) */
+        /* Custom Local Image Uploader Helper */
         .upload-helper-box {
-            display: none; /* Hidden for public visitors */
             background: rgba(255, 255, 255, 0.04);
             border: 1px dashed var(--card-border);
             border-radius: 16px;
@@ -430,7 +461,7 @@
             cursor: pointer;
             border: none;
             transition: transform 0.2s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-custom-upload:hover {
@@ -467,7 +498,7 @@
             height: 14px;
             background: #E2E8F0;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
         }
 
         .cake-layer-1 {
@@ -478,7 +509,7 @@
             height: 60px;
             background: linear-gradient(135deg, #F472B6, #DB2777);
             border-radius: 12px 12px 0 0;
-            box-shadow: inset 0 -5px 0 rgba(0,0,0,0.15);
+            box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.15);
         }
 
         .cake-layer-2 {
@@ -530,8 +561,13 @@
         }
 
         @keyframes flicker {
-            0% { transform: scale(1) rotate(-2deg); }
-            100% { transform: scale(1.15) rotate(2deg); }
+            0% {
+                transform: scale(1) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1.15) rotate(2deg);
+            }
         }
 
         .blow-btn {
@@ -579,7 +615,8 @@
             font-weight: 600;
         }
 
-        .form-input, .form-textarea {
+        .form-input,
+        .form-textarea {
             width: 100%;
             padding: 14px 18px;
             background: rgba(0, 0, 0, 0.3);
@@ -591,7 +628,8 @@
             transition: border-color 0.3s;
         }
 
-        .form-input:focus, .form-textarea:focus {
+        .form-input:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: var(--gold-primary);
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
@@ -692,16 +730,25 @@
             cursor: pointer;
             border: none;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .share-btn.whatsapp { background: #25D366; }
-        .share-btn.facebook { background: #1877F2; }
-        .share-btn.copy { background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color: #000; }
+        .share-btn.whatsapp {
+            background: #25D366;
+        }
+
+        .share-btn.facebook {
+            background: #1877F2;
+        }
+
+        .share-btn.copy {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #000;
+        }
 
         .share-btn:hover {
             transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
         }
 
         /* Footer */
@@ -732,7 +779,7 @@
             font-weight: 700;
             padding: 12px 28px;
             border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 10000;
             opacity: 0;
             transition: all 0.4s ease;
@@ -744,11 +791,19 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Canvas background particles -->
@@ -797,14 +852,14 @@
         <!-- Video Player Display Container -->
         <div class="video-slideshow-wrapper scroll-reveal">
             <div class="cinematic-container" id="slidesContainer">
-                
+
                 <!-- Slide 1 -->
                 <div class="slide-item active" data-index="0">
-                    <img src="images/nafas1.jpg" alt="نفس - أُول دقيقة" onerror="handleImageError(this, 1)">
+                    <img src="images/nafas1.jpg" alt="نفس - النظرة الأولى" onerror="handleImageError(this, 1)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">أول دقيقة شفتك فيها ✨</div>
-                        <div class="slide-caption-desc">الدنيا كلها وقفت.. وربنا رزقنا بأحلى وأغلى نَفَس في العمر</div>
+                        <div class="slide-caption-title">النظرة الأولى ✨</div>
+                        <div class="slide-caption-desc">لحظة وصولكِ التي غَيّرت كل معالم دنيانا</div>
                     </div>
                 </div>
 
@@ -813,48 +868,48 @@
                     <img src="images/nafas2.jpg" alt="نفس - ضحكة القلب" onerror="handleImageError(this, 2)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">ضحكتك دي تسوى الدنيا 💖</div>
-                        <div class="slide-caption-desc">أول ما تبتسمي، كل تعب اليوم بيروح في ثانية.. ضحكتك بتنور البيت</div>
+                        <div class="slide-caption-title">ضحكة تُنير الكون 💖</div>
+                        <div class="slide-caption-desc">ابتسامتكِ الصافية هي موسيقى منزلنا اليومية</div>
                     </div>
                 </div>
 
                 <!-- Slide 3 -->
                 <div class="slide-item" data-index="2">
-                    <img src="images/nafas3.jpg" alt="نفس - العيون الحلوة" onerror="handleImageError(this, 3)">
+                    <img src="images/nafas3.jpg" alt="نفس - الخطوات الأولى" onerror="handleImageError(this, 3)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">العيون الحلوة الصافية 🧸</div>
-                        <div class="slide-caption-desc">كل نظرة براءة منك وكل حركة شقاوة بتاخد عقلنا وقلبنا معاها</div>
+                        <div class="slide-caption-title">براءة الأطفال 🧸</div>
+                        <div class="slide-caption-desc">عيونٌ مليئة بالتساؤل والرقة والجمال</div>
                     </div>
                 </div>
 
                 <!-- Slide 4 -->
                 <div class="slide-item" data-index="3">
-                    <img src="images/nafas4.jpg" alt="نفس - سنة كأنها حلم" onerror="handleImageError(this, 4)">
+                    <img src="images/nafas4.jpg" alt="نفس - عام من السعادة" onerror="handleImageError(this, 4)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">سنة كأنها أجمل حلم 🌸</div>
-                        <div class="slide-caption-desc">مرت 365 يوماً وإحنا بنشوفك بتكبري قدام عيوننا ونشكر ربنا على وجودك</div>
+                        <div class="slide-caption-title">عام كامل من الحب 🌸</div>
+                        <div class="slide-caption-desc">365 يوماً من البهجة وحلاوة الأيام</div>
                     </div>
                 </div>
 
                 <!-- Slide 5 -->
                 <div class="slide-item" data-index="4">
-                    <img src="images/nafas5.jpg" alt="نفس - أميرة بابا كريم" onerror="handleImageError(this, 5)">
+                    <img src="images/nafas5.jpg" alt="نفس - أميرة العائلة" onerror="handleImageError(this, 5)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">أميرتنا وحبيبة بابا كريم 👑</div>
-                        <div class="slide-caption-desc">انتي مش مجرد بنوتة.. انتي الروح والقلب والفرحة اللي كنا بنتمناها</div>
+                        <div class="slide-caption-title">أميرة القلوب 👑</div>
+                        <div class="slide-caption-desc">تربعتِ على عرش المحبة في قلوب الجميع</div>
                     </div>
                 </div>
 
                 <!-- Slide 6 -->
                 <div class="slide-item" data-index="5">
-                    <img src="images/nafas6.jpg" alt="نفس - الشقاوة والرقة" onerror="handleImageError(this, 6)">
+                    <img src="images/nafas6.jpg" alt="نفس - الضحكات واللعب" onerror="handleImageError(this, 6)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">شقاوتك ورقتك في البيت 🌟</div>
-                        <div class="slide-caption-desc">خطواتك الصغيرة وملابسك الرقيقة ملوا حياتنا حب ملوش حدود</div>
+                        <div class="slide-caption-title">فرحة العمر 🌟</div>
+                        <div class="slide-caption-desc">مع كل صباح يزداد حبكِ وتألقكِ في حياتنا</div>
                     </div>
                 </div>
 
@@ -863,8 +918,8 @@
                     <img src="images/nafas7.jpg" alt="نفس - يوم الميلاد" onerror="handleImageError(this, 7)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">كل سنة وأنتِ نَفَس حياتنا 🎂</div>
-                        <div class="slide-caption-desc">عقبال 100 سنة يا روحي وانتي منورة دنيتنا ومحققة كل اللي بتحلمي بيه</div>
+                        <div class="slide-caption-title">عيد ميلاد سعيد يا نَفَس 🎂</div>
+                        <div class="slide-caption-desc">عقبال 100 عام من الصحة والتألق والسعادة</div>
                     </div>
                 </div>
 
@@ -872,29 +927,40 @@
 
             <!-- Video Controls Bar -->
             <div class="video-controls">
-                <button class="control-btn" onclick="prevSlide()" title="الصورة السابقة"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="control-btn" id="playPauseBtn" onclick="togglePlay()" title="إيقاف/تشغيل العرض"><i class="fa-solid fa-pause"></i></button>
-                <button class="control-btn" onclick="nextSlide()" title="الصورة التالية"><i class="fa-solid fa-forward-step"></i></button>
-                
+                <button class="control-btn" onclick="prevSlide()" title="الصورة السابقة"><i
+                        class="fa-solid fa-backward-step"></i></button>
+                <button class="control-btn" id="playPauseBtn" onclick="togglePlay()" title="إيقاف/تشغيل العرض"><i
+                        class="fa-solid fa-pause"></i></button>
+                <button class="control-btn" onclick="nextSlide()" title="الصورة التالية"><i
+                        class="fa-solid fa-forward-step"></i></button>
+
                 <div class="progress-bar-wrap">
                     <div class="progress-bar-fill" id="slideProgress"></div>
                 </div>
 
-                <button class="control-btn" onclick="triggerConfetti()" title="إطلاق الزينة والاحتفال 🎉"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-                <button class="control-btn" onclick="toggleFullscreen()" title="عرض شاشة كاملة"><i class="fa-solid fa-expand"></i></button>
+                <button class="control-btn" onclick="triggerConfetti()" title="إطلاق الزينة والاحتفال 🎉"><i
+                        class="fa-solid fa-wand-magic-sparkles"></i></button>
+                <button class="control-btn" onclick="toggleFullscreen()" title="عرض شاشة كاملة"><i
+                        class="fa-solid fa-expand"></i></button>
             </div>
         </div>
 
         <!-- Uploader helper (In case user opens directly or wants to test local files) -->
         <div class="upload-helper-box scroll-reveal">
-            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور نَفَس:</strong> قم بوضع الصور داخل مجلد <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك مباشرة لتجربتها الآن:</p>
+            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور نَفَس:</strong> قم بوضع الصور داخل مجلد
+                <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك
+                مباشرة لتجربتها الآن:
+            </p>
             <label class="btn-custom-upload">
                 <i class="fa-solid fa-image"></i> اختر صور نَفَس من جهازك
-                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none" onchange="loadUserPhotos(event)">
+                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none"
+                    onchange="loadUserPhotos(event)">
             </label>
-            <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
+            <label class="btn-custom-upload"
+                style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
                 <i class="fa-solid fa-music"></i> اختر ملف أغنية (MP3)
-                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
+                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none"
+                    onchange="loadUserAudio(event)">
             </label>
         </div>
 
@@ -915,7 +981,8 @@
                 <div class="flame" id="candleFlame"></div>
             </div>
 
-            <button class="blow-btn" onclick="blowCandle()"><i class="fa-solid fa-wind"></i> اطفئ الشمعة واحتفل مع نَفَس!</button>
+            <button class="blow-btn" onclick="blowCandle()"><i class="fa-solid fa-wind"></i> اطفئ الشمعة واحتفل مع
+                نَفَس!</button>
         </div>
 
         <!-- Section: Family Wishes Wall -->
@@ -929,13 +996,16 @@
                 <form id="wishForm" onsubmit="saveWish(event)">
                     <div class="form-group">
                         <label><i class="fa-solid fa-user"></i> اسمك الكريِم:</label>
-                        <input type="text" class="form-input" id="wishAuthor" placeholder="مثال: الخال أحمد / الجدة أم كريم..." required>
+                        <input type="text" class="form-input" id="wishAuthor"
+                            placeholder="مثال: الخال أحمد / الجدة أم كريم..." required>
                     </div>
                     <div class="form-group">
                         <label><i class="fa-solid fa-envelope"></i> تهنئتك والأمنيات الطيبة لـ نَفَس:</label>
-                        <textarea class="form-textarea" id="wishText" rows="3" placeholder="اكتب كلمتك الطيبة هنا..." required></textarea>
+                        <textarea class="form-textarea" id="wishText" rows="3" placeholder="اكتب كلمتك الطيبة هنا..."
+                            required></textarea>
                     </div>
-                    <button type="submit" class="btn-submit-wish"><i class="fa-solid fa-paper-plane"></i> إرسال التهنئة الآن 💌</button>
+                    <button type="submit" class="btn-submit-wish"><i class="fa-solid fa-paper-plane"></i> إرسال التهنئة
+                        الآن 💌</button>
                 </form>
             </div>
 
@@ -945,13 +1015,15 @@
                 <div class="wish-item-card">
                     <div class="wish-author">والدكِ المحب: كريم ❤️</div>
                     <div class="wish-rel">والد الأميرة</div>
-                    <div class="wish-text">يا نَفَس حياتي، كل عام وأنتِ النور الذي يُضيء دربي، حفظك الله وجعلكِ سنداً وفرحة دائمة.</div>
+                    <div class="wish-text">يا نَفَس حياتي، كل عام وأنتِ النور الذي يُضيء دربي، حفظك الله وجعلكِ سنداً
+                        وفرحة دائمة.</div>
                 </div>
 
                 <div class="wish-item-card">
                     <div class="wish-author">عائلة نَفَس 💖</div>
                     <div class="wish-rel">الأهل والأقارب</div>
-                    <div class="wish-text">عيد ميلاد سعيد يا أحلى نَفَس! عقبال مائة عام ملئ بالصحة والتوفيق والنجاح.</div>
+                    <div class="wish-text">عيد ميلاد سعيد يا أحلى نَفَس! عقبال مائة عام ملئ بالصحة والتوفيق والنجاح.
+                    </div>
                 </div>
             </div>
         </div>
@@ -959,8 +1031,9 @@
         <!-- Section: Share with Family & Socials -->
         <div class="share-section scroll-reveal">
             <div class="share-title">📢 شارك الفرحة مع الأهل والأصدقاء</div>
-            <p style="color: rgba(255,255,255,0.8); font-size:1.05rem;">أرسل هذه الصفحة الفخمة للعائلة على واتساب وفيس بوك لشاركونا الفرحة</p>
-            
+            <p style="color: rgba(255,255,255,0.8); font-size:1.05rem;">أرسل هذه الصفحة للعائلة على واتساب وفيس بوك
+                لشاركونا الفرحة</p>
+
             <div class="share-buttons">
                 <button class="share-btn whatsapp" onclick="shareWhatsApp()">
                     <i class="fa-brands fa-whatsapp" style="font-size:1.3rem;"></i> إرسال عبر واتساب
@@ -993,15 +1066,8 @@
         let isPlaying = true;
         let slideInterval = null;
         let progressInterval = null;
-        const duration = 4500; // 4.5 seconds per photo for faster lively transitions
+        const duration = 7000; // 7 seconds per photo
         let startTime = Date.now();
-        let confettiTimeout = null;
-
-        // Show upload helper only if ?edit=1 or ?admin=1 is in URL
-        if (window.location.search.includes('edit') || window.location.search.includes('admin')) {
-            const uploader = document.querySelector('.upload-helper-box');
-            if (uploader) uploader.style.display = 'block';
-        }
 
         /* Canvas Particle Effect */
         const canvas = document.getElementById('particleCanvas');
@@ -1068,12 +1134,6 @@
             });
             currentIndex = index;
             resetProgress();
-
-            // Automatically trigger celebratory confetti burst 1.2s into each photo!
-            if (confettiTimeout) clearTimeout(confettiTimeout);
-            confettiTimeout = setTimeout(() => {
-                if (isPlaying) triggerConfetti();
-            }, 1200);
         }
 
         function nextSlide() {
@@ -1153,7 +1213,7 @@
 
             for (let i = 0; i < Math.min(files.length, totalSlides); i++) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const img = slides[i].querySelector('img');
                     if (img) img.src = e.target.result;
                 };
@@ -1182,21 +1242,21 @@
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-            
+
             const notes = [
                 { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
                 { note: 'A4', duration: 0.8 }, { note: 'G4', duration: 0.8 },
                 { note: 'C5', duration: 0.8 }, { note: 'B4', duration: 1.2 },
-                
+
                 { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
                 { note: 'A4', duration: 0.8 }, { note: 'G4', duration: 0.8 },
                 { note: 'D5', duration: 0.8 }, { note: 'C5', duration: 1.2 },
-                
+
                 { note: 'G4', duration: 0.4 }, { note: 'G4', duration: 0.4 },
                 { note: 'G5', duration: 0.8 }, { note: 'E5', duration: 0.8 },
                 { note: 'C5', duration: 0.8 }, { note: 'B4', duration: 0.8 },
                 { note: 'A4', duration: 1.2 },
-                
+
                 { note: 'F5', duration: 0.4 }, { note: 'F5', duration: 0.4 },
                 { note: 'E5', duration: 0.8 }, { note: 'C5', duration: 0.8 },
                 { note: 'D5', duration: 0.8 }, { note: 'C5', duration: 1.5 }
@@ -1255,7 +1315,7 @@
         }
 
         // Auto start audio on user first interaction
-        document.body.addEventListener('click', function() {
+        document.body.addEventListener('click', function () {
             if (!audioIsPlaying) {
                 toggleAudio();
             }
@@ -1267,7 +1327,7 @@
             flame.classList.add('off');
             triggerConfetti();
             showToast('🎉 تم إطفاء الشمعة! كل عام وأنتِ بألف خير يا نَفَس 🎉');
-            
+
             setTimeout(() => {
                 flame.classList.remove('off');
             }, 6000);
@@ -1385,4 +1445,5 @@
         }
     </script>
 </body>
+
 </html>
