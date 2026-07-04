@@ -303,17 +303,44 @@
             z-index: 2;
         }
 
-        /* Ken Burns Effect Animation */
-        .slide-item img {
-            width: 100%;
-            height: 100%;
+        /* Slide Image Styling: 100% full view without cropping */
+        .slide-item .bg-blur-img {
+            position: absolute;
+            inset: -25px;
+            width: 120%;
+            height: 120%;
             object-fit: cover;
-            transform: scale(1.18);
-            transition: transform 7s ease-out;
+            filter: blur(40px) brightness(0.35);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.9;
         }
 
-        .slide-item.active img {
+        .slide-item .main-slide-img {
+            position: relative;
+            z-index: 2;
+            max-width: 96%;
+            max-height: 96%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            transform: scale(1.05);
+            transition: transform 7s ease-out;
+            filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.85));
+            border-radius: 12px;
+        }
+
+        .slide-item.active .main-slide-img {
             transform: scale(1);
+        }
+
+        /* Fallback for single img tag */
+        .slide-item img:not(.main-slide-img):not(.bg-blur-img) {
+            max-width: 98%;
+            max-height: 98%;
+            object-fit: contain;
+            transform: scale(1);
+            filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.85));
         }
 
         /* Ultra-smooth Scroll Animations */
@@ -840,8 +867,6 @@
                     ولدت طفلتنا الجميلة <span class="highlight-gold">"نَفَس"</span>، فملأت دنيانا دِفئاً وضياءً.<br>
                     كل ضحكةٍ منكِ كانت قصيدة حُب، وكل خطوة كانت بشارة فرح.<br>
                     حفظكِ الله يا زهرة عمري ونبض قلبي.. دمتِ لنا عِيداً دائماً.
-                </p>
-            </div>
         </header>
 
         <!-- Section: Video Slideshow -->
@@ -856,71 +881,78 @@
 
                 <!-- Slide 1 -->
                 <div class="slide-item active" data-index="0">
-                    <img src="images/nafas1.jpg" alt="نفس - النظرة الأولى" onerror="handleImageError(this, 1)">
+                    <img src="images/nafas1.jpg" alt="نفس - أُول دقيقة" class="bg-blur-img" onerror="handleImageError(this, 1)">
+                    <img src="images/nafas1.jpg" alt="نفس - أُول دقيقة" class="main-slide-img" onerror="handleImageError(this, 1)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">النظرة الأولى ✨</div>
-                        <div class="slide-caption-desc">لحظة وصولكِ التي غَيّرت كل معالم دنيانا</div>
+                        <div class="slide-caption-title">أول دقيقة شفتك فيها ✨</div>
+                        <div class="slide-caption-desc">الدنيا كلها وقفت.. وربنا رزقنا بأحلى وأغلى نَفَس في العمر</div>
                     </div>
                 </div>
 
                 <!-- Slide 2 -->
                 <div class="slide-item" data-index="1">
-                    <img src="images/nafas2.jpg" alt="نفس - ضحكة القلب" onerror="handleImageError(this, 2)">
+                    <img src="images/nafas2.jpg" alt="نفس - ضحكة القلب" class="bg-blur-img" onerror="handleImageError(this, 2)">
+                    <img src="images/nafas2.jpg" alt="نفس - ضحكة القلب" class="main-slide-img" onerror="handleImageError(this, 2)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">ضحكة تُنير الكون 💖</div>
-                        <div class="slide-caption-desc">ابتسامتكِ الصافية هي موسيقى منزلنا اليومية</div>
+                        <div class="slide-caption-title">ضحكتك دي تسوى الدنيا 💖</div>
+                        <div class="slide-caption-desc">أول ما تبتسمي، كل تعب اليوم بيروح في ثانية.. ضحكتك بتنور البيت</div>
                     </div>
                 </div>
 
                 <!-- Slide 3 -->
                 <div class="slide-item" data-index="2">
-                    <img src="images/nafas3.jpg" alt="نفس - الخطوات الأولى" onerror="handleImageError(this, 3)">
+                    <img src="images/nafas3.jpg" alt="نفس - العيون الحلوة" class="bg-blur-img" onerror="handleImageError(this, 3)">
+                    <img src="images/nafas3.jpg" alt="نفس - العيون الحلوة" class="main-slide-img" onerror="handleImageError(this, 3)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">براءة الأطفال 🧸</div>
-                        <div class="slide-caption-desc">عيونٌ مليئة بالتساؤل والرقة والجمال</div>
+                        <div class="slide-caption-title">العيون الحلوة الصافية 🧸</div>
+                        <div class="slide-caption-desc">كل نظرة براءة منك وكل حركة شقاوة بتاخد عقلنا وقلبنا معاها</div>
                     </div>
                 </div>
 
                 <!-- Slide 4 -->
                 <div class="slide-item" data-index="3">
-                    <img src="images/nafas4.jpg" alt="نفس - عام من السعادة" onerror="handleImageError(this, 4)">
+                    <img src="images/nafas4.jpg" alt="نفس - سنة كأنها حلم" class="bg-blur-img" onerror="handleImageError(this, 4)">
+                    <img src="images/nafas4.jpg" alt="نفس - سنة كأنها حلم" class="main-slide-img" onerror="handleImageError(this, 4)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">عام كامل من الحب 🌸</div>
-                        <div class="slide-caption-desc">365 يوماً من البهجة وحلاوة الأيام</div>
+                        <div class="slide-caption-title">سنة كأنها أجمل حلم 🌸</div>
+                        <div class="slide-caption-desc">مرت 365 يوماً وإحنا بنشوفك بتكبري قدام عيوننا ونشكر ربنا على وجودك</div>
                     </div>
                 </div>
 
                 <!-- Slide 5 -->
                 <div class="slide-item" data-index="4">
-                    <img src="images/nafas5.jpg" alt="نفس - أميرة العائلة" onerror="handleImageError(this, 5)">
+                    <img src="images/nafas5.jpg" alt="نفس - أميرة بابا كريم" class="bg-blur-img" onerror="handleImageError(this, 5)">
+                    <img src="images/nafas5.jpg" alt="نفس - أميرة بابا كريم" class="main-slide-img" onerror="handleImageError(this, 5)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">أميرة القلوب 👑</div>
-                        <div class="slide-caption-desc">تربعتِ على عرش المحبة في قلوب الجميع</div>
+                        <div class="slide-caption-title">أميرتنا وحبيبة بابا كريم 👑</div>
+                        <div class="slide-caption-desc">انتي مش مجرد بنوتة.. انتي الروح والقلب والفرحة اللي كنا بنتمناها</div>
                     </div>
                 </div>
 
                 <!-- Slide 6 -->
                 <div class="slide-item" data-index="5">
-                    <img src="images/nafas6.jpg" alt="نفس - الضحكات واللعب" onerror="handleImageError(this, 6)">
+                    <img src="images/nafas6.jpg" alt="نفس - الشقاوة والرقة" class="bg-blur-img" onerror="handleImageError(this, 6)">
+                    <img src="images/nafas6.jpg" alt="نفس - الشقاوة والرقة" class="main-slide-img" onerror="handleImageError(this, 6)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">فرحة العمر 🌟</div>
-                        <div class="slide-caption-desc">مع كل صباح يزداد حبكِ وتألقكِ في حياتنا</div>
+                        <div class="slide-caption-title">شقاوتك ورقتك في البيت 🌟</div>
+                        <div class="slide-caption-desc">خطواتك الصغيرة وملابسك الرقيقة ملوا حياتنا حب ملوش حدود</div>
                     </div>
                 </div>
 
                 <!-- Slide 7 -->
                 <div class="slide-item" data-index="6">
-                    <img src="images/nafas7.jpg" alt="نفس - يوم الميلاد" onerror="handleImageError(this, 7)">
+                    <img src="images/nafas7.jpg" alt="نفس - يوم الميلاد" class="bg-blur-img" onerror="handleImageError(this, 7)">
+                    <img src="images/nafas7.jpg" alt="نفس - يوم الميلاد" class="main-slide-img" onerror="handleImageError(this, 7)">
                     <div class="slide-overlay"></div>
                     <div class="slide-caption-box">
-                        <div class="slide-caption-title">عيد ميلاد سعيد يا نَفَس 🎂</div>
-                        <div class="slide-caption-desc">عقبال 100 عام من الصحة والتألق والسعادة</div>
+                        <div class="slide-caption-title">كل سنة وأنتِ نَفَس حياتنا 🎂</div>
+                        <div class="slide-caption-desc">عقبال 100 سنة يا روحي وانتي منورة دنيتنا ومحققة كل اللي بتحلمي بيه</div>
                     </div>
                 </div>
 
@@ -946,23 +978,26 @@
             </div>
         </div>
 
-        <!-- Uploader helper (In case user opens directly or wants to test local files) -->
+        <!-- Uploader helper (In case user opens directly or wants to test local files / YouTube link) -->
         <div class="upload-helper-box scroll-reveal">
-            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور نَفَس:</strong> قم بوضع الصور داخل مجلد
-                <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك
-                مباشرة لتجربتها الآن:
-            </p>
+            <p><i class="fa-solid fa-folder-open"></i> <strong>طريقة إضافة صور وأغاني نَفَس:</strong> قم بوضع الصور داخل مجلد <code>images</code> باسم <code>nafas1.jpg</code> حتى <code>nafas7.jpg</code>، أو يمكنك اختيار صورك وأغنيتك مباشرة هنا:</p>
             <label class="btn-custom-upload">
                 <i class="fa-solid fa-image"></i> اختر صور نَفَس من جهازك
-                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none"
-                    onchange="loadUserPhotos(event)">
+                <input type="file" id="localImagePicker" accept="image/*" multiple style="display:none" onchange="loadUserPhotos(event)">
             </label>
-            <label class="btn-custom-upload"
-                style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
+            <label class="btn-custom-upload" style="background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark)); color:#000; margin-right:8px;">
                 <i class="fa-solid fa-music"></i> اختر ملف أغنية (MP3)
-                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none"
-                    onchange="loadUserAudio(event)">
+                <input type="file" id="localAudioPicker" accept="audio/*" style="display:none" onchange="loadUserAudio(event)">
             </label>
+
+            <!-- YouTube Audio Link Input -->
+            <div style="margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                <input type="text" id="ytUrlInput" class="form-input" style="max-width: 380px; padding: 10px 15px; font-size: 0.9rem;" placeholder="ضع رابط أغنية من يوتيوب هنا (مثلاً: https://youtu.be/...)">
+                <button type="button" onclick="playYouTubeFromInput()" class="btn-custom-upload" style="background: linear-gradient(135deg, #FF0000, #CC0000); color: #FFF;">
+                    <i class="fa-brands fa-youtube"></i> تشغيل صوت يوتيوب 🎵
+                </button>
+            </div>
+            <div id="ytAudioContainer" style="display:none;"></div>
         </div>
 
         <!-- Section: Interactive Birthday Cake -->
@@ -1220,6 +1255,59 @@
             img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
         }
 
+        /* YouTube Audio Player Integration */
+        let ytPlayer = null;
+        let isYouTubeAudio = false;
+
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('ytAudioContainer', {
+                height: '0',
+                width: '0',
+                videoId: '',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1 },
+                events: {
+                    'onStateChange': function (e) {
+                        if (e.data === YT.PlayerState.PLAYING) {
+                            audioIsPlaying = true;
+                            document.getElementById('audioStatusText').innerText = 'صوت يوتيوب 🎵';
+                            document.querySelector('#mainAudioBtn i').className = 'fa-brands fa-youtube';
+                        }
+                    }
+                }
+            });
+        }
+
+        function playYouTubeFromInput() {
+            const input = document.getElementById('ytUrlInput');
+            if (!input || !input.value.trim()) return;
+            const videoId = extractYouTubeId(input.value.trim());
+            if (!videoId) {
+                showToast('رابط يوتيوب غير صحيح ❌');
+                return;
+            }
+            if (ytPlayer && ytPlayer.loadVideoById) {
+                ytPlayer.loadVideoById(videoId);
+                ytPlayer.playVideo();
+                isYouTubeAudio = true;
+                audioIsPlaying = true;
+                showToast('جاري تشغيل صوت الأغنية من يوتيوب! 🎶');
+            } else {
+                showToast('جاري تحضير المشغل، اضغط مرة أخرى بعد قليل');
+            }
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : url;
+        }
+
         /* Local File Picker Loaders for instant live preview */
         function loadUserPhotos(event) {
             const files = event.target.files;
@@ -1228,8 +1316,8 @@
             for (let i = 0; i < Math.min(files.length, totalSlides); i++) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const img = slides[i].querySelector('img');
-                    if (img) img.src = e.target.result;
+                    const imgs = slides[i].querySelectorAll('img');
+                    imgs.forEach(img => img.src = e.target.result);
                 };
                 reader.readAsDataURL(files[i]);
             }
@@ -1244,7 +1332,9 @@
             audioPlayer.src = URL.createObjectURL(file);
             audioPlayer.play();
             audioIsPlaying = true;
+            isYouTubeAudio = false;
             document.getElementById('audioStatusText').innerText = 'تشغيل أغنيتك الخاصة 🎵';
+            document.querySelector('#mainAudioBtn i').className = 'fa-solid fa-pause';
             showToast('جاري تشغيل الأغنية المحددة! 🎶');
         }
 
@@ -1306,6 +1396,24 @@
             const bgMusic = document.getElementById('bgMusic');
             const btnIcon = document.querySelector('#mainAudioBtn i');
             const statusText = document.getElementById('audioStatusText');
+
+            if (isYouTubeAudio && ytPlayer) {
+                try {
+                    const state = ytPlayer.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        ytPlayer.pauseVideo();
+                        audioIsPlaying = false;
+                        btnIcon.className = 'fa-solid fa-music';
+                        statusText.innerText = 'إيقاف الموسيقى 🔇';
+                    } else {
+                        ytPlayer.playVideo();
+                        audioIsPlaying = true;
+                        btnIcon.className = 'fa-brands fa-youtube';
+                        statusText.innerText = 'صوت يوتيوب 🎵';
+                    }
+                } catch (e) { }
+                return;
+            }
 
             if (!audioIsPlaying) {
                 // Try playing HTML5 audio first
